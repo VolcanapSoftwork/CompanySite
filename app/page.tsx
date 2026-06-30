@@ -277,7 +277,7 @@ export default function Home() {
           </div>
           <div className="agency-card">
             <div className="agency-logo-wrap">
-              <Image src="/tatip-rtp.png" alt="TATIP RTP logo" width={136} height={136} sizes="136px" />
+              <Image src="/tatip-rtp.png" alt="TATIP RTP logo" width={2000} height={2000} sizes="2000px" />
             </div>
             <div className="agency-body">
               <span className="agency-label">Government Agency</span>
@@ -321,9 +321,9 @@ export default function Home() {
             ราคาจริงขึ้นกับขอบเขตงาน รายละเอียดการใช้งาน และระยะเวลาส่งมอบ
           </p>
           <div className="contact-list">
-            <a className="contact-item" href="mailto:hello@volcanap.softwork">
+            <a className="contact-item" href="mailto:volcanapsoftwork@gmail.com">
               <Mail size={18} />
-              hello@volcanap.softwork
+              volcanapsoftwork@gmail.com
             </a>
             <span className="contact-item">
               <MapPin size={18} />
