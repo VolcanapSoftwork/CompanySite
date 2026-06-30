@@ -1,39 +1,4 @@
 @import "tailwindcss";
-@plugin "daisyui";
-@plugin "daisyui/theme" {
-  name: "volcanap";
-  default: true;
-  prefersdark: false;
-  color-scheme: light;
-  --color-base-100: #fffdf9;
-  --color-base-200: #fff1e7;
-  --color-base-300: #ead8ca;
-  --color-base-content: #181411;
-  --color-primary: #e76622;
-  --color-primary-content: #ffffff;
-  --color-secondary: #286a56;
-  --color-secondary-content: #ffffff;
-  --color-accent: #243f73;
-  --color-accent-content: #ffffff;
-  --color-neutral: #27211c;
-  --color-neutral-content: #ffffff;
-  --color-info: #243f73;
-  --color-info-content: #ffffff;
-  --color-success: #286a56;
-  --color-success-content: #ffffff;
-  --color-warning: #ff914d;
-  --color-warning-content: #181411;
-  --color-error: #d93025;
-  --color-error-content: #ffffff;
-  --radius-selector: 0.5rem;
-  --radius-field: 0.5rem;
-  --radius-box: 0.5rem;
-  --size-selector: 0.25rem;
-  --size-field: 0.25rem;
-  --border: 1px;
-  --depth: 1;
-  --noise: 0;
-}
 
 :root {
   --volcanap: #ff914d;
@@ -93,6 +58,40 @@ main {
   position: relative;
   min-height: 100vh;
   overflow-x: hidden;
+}
+
+.identity-section,
+.trust-band,
+#services,
+.case-section,
+.process-band,
+.contact-section,
+.site-footer {
+  content-visibility: auto;
+}
+
+.identity-section,
+#services,
+.case-section,
+.process-band,
+.contact-section {
+  contain-intrinsic-size: auto 760px;
+}
+
+.trust-band,
+.site-footer {
+  contain-intrinsic-size: auto 140px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
 }
 
 /* ── Background glow ── */
@@ -194,6 +193,7 @@ main {
   padding: 0 18px;
   border-radius: var(--radius);
   font-weight: 700;
+  cursor: pointer;
   transition: transform 0.15s, box-shadow 0.2s, background 0.2s;
 }
 
@@ -220,6 +220,16 @@ main {
 .secondary-button:hover {
   background: var(--soft);
   border-color: rgba(204, 68, 0, 0.3);
+}
+
+.header-cta:focus-visible,
+.primary-button:focus-visible,
+.secondary-button:focus-visible,
+.menu-button:focus-visible,
+.option:focus-visible,
+.timeline-control button:focus-visible {
+  outline: 3px solid rgba(255, 145, 77, 0.35);
+  outline-offset: 2px;
 }
 
 .menu-button {
@@ -634,6 +644,20 @@ h3 {
   gap: 8px;
 }
 
+.delivery-proof span {
+  display: inline-flex;
+  min-height: 26px;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 10px;
+  border: 1px solid rgba(39, 33, 28, 0.7);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.62);
+  color: var(--ink);
+  font-size: 0.84rem;
+  line-height: 1.2;
+}
+
 /* ── Trust band ── */
 .trust-band {
   position: relative;
@@ -882,6 +906,9 @@ h3 {
 }
 
 .case-tags span {
+  display: inline-flex;
+  min-height: 28px;
+  align-items: center;
   padding: 8px 14px;
   border: 1px solid var(--line);
   border-radius: var(--radius);
@@ -1528,7 +1555,7 @@ a.contact-item:hover {
     gap: 6px;
   }
 
-  .delivery-proof .badge {
+  .delivery-proof span {
     max-width: 100%;
     height: auto;
     min-height: 24px;

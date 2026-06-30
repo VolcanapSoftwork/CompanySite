@@ -1,8 +1,5 @@
-"use client";
-
 import Image from "next/image";
 import {
-  ArrowRight,
   BarChart3,
   CheckCircle2,
   ChevronRight,
@@ -11,13 +8,12 @@ import {
   Layers3,
   Mail,
   MapPin,
-  Menu,
   Rocket,
   ShieldCheck,
-  Sparkles,
-  X
+  Sparkles
 } from "lucide-react";
-import { useMemo, useState } from "react";
+import { ScopeEstimator } from "./components/ScopeEstimator";
+import { SiteHeader } from "./components/SiteHeader";
 
 const navItems = [
   { href: "#services", label: "บริการ" },
@@ -102,95 +98,12 @@ const deliveryStages = [
   { step: "04", title: "Launch", text: "Deploy, handover, support" }
 ];
 
-const projectOptions = [
-  { id: "website", label: "Corporate Website", price: 35000 },
-  { id: "webapp", label: "Web Application", price: 85000 },
-  { id: "dashboard", label: "Dashboard", price: 55000 },
-  { id: "ai", label: "AI Workflow", price: 75000 },
-  { id: "security", label: "Security Layer", price: 45000 }
-];
-
-const timelineOptions = [
-  { id: "fast", label: "2–4 สัปดาห์", multiplier: 1.25 },
-  { id: "normal", label: "1–2 เดือน", multiplier: 1 },
-  { id: "long", label: "3 เดือนขึ้นไป", multiplier: 0.95 }
-];
-
-function formatBaht(value: number) {
-  return new Intl.NumberFormat("th-TH", {
-    style: "currency",
-    currency: "THB",
-    maximumFractionDigits: 0
-  }).format(value);
-}
-
 export default function Home() {
-  const [menuOpen, setMenuOpen] = useState(false);
-  const [selected, setSelected] = useState(["website", "webapp"]);
-  const [timeline, setTimeline] = useState(timelineOptions[1].id);
-  const [submitted, setSubmitted] = useState(false);
-
-  const estimate = useMemo(() => {
-    const base = selected.reduce((sum, id) => {
-      const item = projectOptions.find((option) => option.id === id);
-      return sum + (item?.price ?? 0);
-    }, 0);
-    const multiplier = timelineOptions.find((t) => t.id === timeline)?.multiplier ?? 1;
-    return Math.round(base * multiplier);
-  }, [selected, timeline]);
-
-  function toggleOption(id: string) {
-    setSelected((current) =>
-      current.includes(id) ? current.filter((item) => item !== id) : [...current, id]
-    );
-  }
-
   return (
     <main>
       <div className="page-glow" aria-hidden="true" />
 
-      <header className="site-header navbar">
-        <a className="brand" href="#top" aria-label="VOLCANAP SOFTWORK home">
-          <Image src="/volcanap-logo.png" alt="VOLCANAP SOFTWORK logo" width={48} height={48} priority />
-          <span>
-            <strong>VOLCANAP SOFTWORK</strong>
-            <small>Software House</small>
-          </span>
-        </a>
-        <nav className="desktop-nav menu menu-horizontal" aria-label="Primary navigation">
-          {navItems.map((item) => (
-            <a key={item.href} href={item.href}>
-              {item.label}
-            </a>
-          ))}
-        </nav>
-        <a className="header-cta btn btn-primary" href="#contact">
-          เริ่มโปรเจกต์
-          <ArrowRight size={16} />
-        </a>
-        <button
-          className="menu-button btn btn-ghost btn-square"
-          type="button"
-          aria-label="Toggle navigation menu"
-          onClick={() => setMenuOpen((open) => !open)}
-        >
-          {menuOpen ? <X size={22} /> : <Menu size={22} />}
-        </button>
-      </header>
-
-      {menuOpen && (
-        <nav className="mobile-nav menu" aria-label="Mobile navigation">
-          {navItems.map((item) => (
-            <a key={item.href} href={item.href} onClick={() => setMenuOpen(false)}>
-              {item.label}
-            </a>
-          ))}
-          <a className="mobile-nav-cta btn btn-primary" href="#contact" onClick={() => setMenuOpen(false)}>
-            เริ่มโปรเจกต์
-            <ArrowRight size={16} />
-          </a>
-        </nav>
-      )}
+      <SiteHeader navItems={navItems} />
 
       <section className="landing-hero section-shell" id="top">
         <div className="landing-hero-content">
@@ -209,11 +122,11 @@ export default function Home() {
             system integration ไปจนถึง maintenance หลังเปิดใช้งาน
           </p>
           <div className="hero-actions">
-            <a className="primary-button btn btn-primary" href="#contact">
+            <a className="primary-button" href="#contact">
               ขอประเมินงานฟรี
               <ChevronRight size={18} />
             </a>
-            <a className="secondary-button btn btn-outline" href="#work">
+            <a className="secondary-button" href="#work">
               ดูผลงานหน่วยงานรัฐ
             </a>
           </div>
@@ -234,7 +147,7 @@ export default function Home() {
               alt="VOLCANAP SOFTWORK logo"
               width={72}
               height={72}
-              priority
+              sizes="72px"
               className="delivery-map-logo"
             />
             <div>
@@ -269,9 +182,9 @@ export default function Home() {
           </p>
 
           <div className="delivery-proof" aria-label="Delivery strengths">
-            <span className="badge badge-outline">Business-first</span>
-            <span className="badge badge-outline">Production-ready</span>
-            <span className="badge badge-outline">Supportable</span>
+            <span>Business-first</span>
+            <span>Production-ready</span>
+            <span>Supportable</span>
           </div>
         </div>
       </section>
@@ -281,7 +194,14 @@ export default function Home() {
           <div className="identity-visual">
             <div className="identity-circle"></div>
             <div className="identity-circle identity-circle--inner"></div>
-            <Image src="/volcanap-logo.png" alt="Volcanap Core" width={100} height={100} className="identity-logo" />
+            <Image
+              src="/volcanap-logo.png"
+              alt="Volcanap Core"
+              width={100}
+              height={100}
+              sizes="100px"
+              className="identity-logo"
+            />
           </div>
           <div className="identity-text">
             <p className="eyebrow">Software House Partner</p>
@@ -328,7 +248,7 @@ export default function Home() {
           {services.map((service) => {
             const Icon = service.icon;
             return (
-              <article className="service-card card" key={service.title}>
+              <article className="service-card" key={service.title}>
                 <div className="icon-tile">
                   <Icon size={22} />
                 </div>
@@ -350,14 +270,14 @@ export default function Home() {
               ในการพัฒนาระบบที่ต้องรองรับความปลอดภัย การใช้งานจริง และส่งผลกระทบในวงกว้าง
             </p>
             <div className="case-tags">
-              <span className="badge badge-outline">หน่วยงานรัฐ</span>
-              <span className="badge badge-outline">Anti-Trafficking</span>
-              <span className="badge badge-outline">Royal Thai Police</span>
+              <span>หน่วยงานรัฐ</span>
+              <span>Anti-Trafficking</span>
+              <span>Royal Thai Police</span>
             </div>
           </div>
-          <div className="agency-card card">
+          <div className="agency-card">
             <div className="agency-logo-wrap">
-              <img src="/tatip-rtp.png" alt="TATIP RTP logo" />
+              <Image src="/tatip-rtp.png" alt="TATIP RTP logo" width={136} height={136} sizes="136px" />
             </div>
             <div className="agency-body">
               <span className="agency-label">Government Agency</span>
@@ -381,7 +301,7 @@ export default function Home() {
           </div>
           <div className="process-steps">
             {process.map((item, index) => (
-              <div className="process-step card" key={item.step}>
+              <div className="process-step" key={item.step}>
                 <span className="process-number">{item.step}</span>
                 <strong>{item.title}</strong>
                 <p>{item.text}</p>
@@ -415,64 +335,12 @@ export default function Home() {
             </span>
           </div>
         </div>
-        <form
-          className="estimate-card card"
-          onSubmit={(event) => {
-            event.preventDefault();
-            setSubmitted(true);
-          }}
-        >
-          <div className="form-group">
-            <label>เลือกประเภทงาน</label>
-            <div className="option-grid">
-              {projectOptions.map((option) => (
-                <button
-                  className={selected.includes(option.id) ? "option btn btn-outline active btn-primary" : "option btn btn-outline"}
-                  key={option.id}
-                  type="button"
-                  onClick={() => toggleOption(option.id)}
-                >
-                  <span>{option.label}</span>
-                  <small>{formatBaht(option.price)}+</small>
-                </button>
-              ))}
-            </div>
-          </div>
-          <div className="form-group">
-            <label>ระยะเวลาโดยประมาณ</label>
-            <div className="timeline-control">
-              {timelineOptions.map((option) => (
-                <button
-                  className={timeline === option.id ? "btn btn-outline active btn-secondary" : "btn btn-outline"}
-                  key={option.id}
-                  type="button"
-                  onClick={() => setTimeline(option.id)}
-                >
-                  {option.label}
-                </button>
-              ))}
-            </div>
-          </div>
-          <div className="estimate-total">
-            <span>งบเริ่มต้นโดยประมาณ</span>
-            <strong>{selected.length ? formatBaht(estimate) : "เลือก scope ก่อน"}</strong>
-          </div>
-          <button className="primary-button btn btn-primary full-width" type="submit" disabled={!selected.length}>
-            ส่ง scope เบื้องต้น
-            <ArrowRight size={18} />
-          </button>
-          {submitted && (
-            <p className="success-message alert alert-success">
-              <CheckCircle2 size={18} />
-              รับ scope แล้ว ทีม VOLCANAP สามารถนำชุดตัวเลือกนี้ไปคุย requirement ต่อได้ทันที
-            </p>
-          )}
-        </form>
+        <ScopeEstimator />
       </section>
 
       <footer className="site-footer">
         <div className="footer-brand">
-          <Image src="/volcanap-logo.png" alt="" width={40} height={40} />
+          <Image src="/volcanap-logo.png" alt="" width={40} height={40} sizes="40px" />
           <div>
             <strong>VOLCANAP SOFTWORK</strong>
             <span>Software House · Bangkok</span>

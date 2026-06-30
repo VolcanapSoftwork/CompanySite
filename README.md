@@ -8,7 +8,7 @@ Responsive company website for VOLCANAP SOFTWORK, built as a one-page Software H
 - React 19
 - TypeScript
 - Tailwind CSS 4
-- DaisyUI 5 custom theme
+- Custom responsive CSS layered on Tailwind
 - pnpm
 - lucide-react icons
 
@@ -43,7 +43,7 @@ pnpm lint     # Type-check with tsc --noEmit
 app/
   layout.tsx    # Root layout, metadata, theme attribute
   page.tsx      # One-page website UI and estimator state
-  globals.css   # Tailwind/DaisyUI setup, theme, responsive styling
+  globals.css   # Tailwind setup, theme variables, responsive styling
 public/
   volcanap-logo.png
   tatip-rtp.png
@@ -52,5 +52,5 @@ public/
 ## Notes
 
 - Package manager is pinned with `packageManager: pnpm@10.33.0`.
-- DaisyUI theme is configured in `app/globals.css` as `volcanap`.
+- Tailwind CSS is configured through `app/globals.css` and `postcss.config.mjs`.
 - Temporary Playwright screenshots and local build artifacts are ignored by git.

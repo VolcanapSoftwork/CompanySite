@@ -37,7 +37,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="th" data-theme="volcanap" className={`${sora.variable} ${notoSansThai.variable}`}>
+    <html lang="th" className={`${sora.variable} ${notoSansThai.variable}`}>
       <body>{children}</body>
     </html>
   );
