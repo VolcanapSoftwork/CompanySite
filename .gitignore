@@ -1,0 +1,13 @@
+.next
+node_modules
+out
+dist
+build
+.env
+.env*.local
+.vercel
+*.tsbuildinfo
+output/playwright
+.playwright-cli
+.playwright-mcp
+codex-skills/
