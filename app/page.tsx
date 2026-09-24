@@ -13,6 +13,7 @@ import {
   Sparkles
 } from "lucide-react";
 import { ScopeEstimator } from "./components/ScopeEstimator";
+import { COMPANY_EMAIL } from "./site";
 import { SiteHeader } from "./components/SiteHeader";
 
 const navItems = [
@@ -277,7 +278,13 @@ export default function Home() {
           </div>
           <div className="agency-card">
             <div className="agency-logo-wrap">
-              <Image src="/tatip-rtp.png" alt="TATIP RTP logo" width={2000} height={2000} sizes="2000px" />
+              <Image
+                src="/tatip-rtp.png"
+                alt="TATIP RTP logo"
+                width={2000}
+                height={2000}
+                sizes="(max-width: 680px) 120px, 160px"
+              />
             </div>
             <div className="agency-body">
               <span className="agency-label">Government Agency</span>
@@ -321,9 +328,9 @@ export default function Home() {
             ราคาจริงขึ้นกับขอบเขตงาน รายละเอียดการใช้งาน และระยะเวลาส่งมอบ
           </p>
           <div className="contact-list">
-            <a className="contact-item" href="mailto:volcanapsoftwork@gmail.com">
+            <a className="contact-item" href={`mailto:${COMPANY_EMAIL}`}>
               <Mail size={18} />
-              volcanapsoftwork@gmail.com
+              {COMPANY_EMAIL}
             </a>
             <span className="contact-item">
               <MapPin size={18} />

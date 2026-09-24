@@ -20,6 +20,10 @@
   --shadow-sm: 0 10px 30px rgba(39, 33, 28, 0.08);
   --radius: 8px;
   --radius-lg: 16px;
+  --shell-max: 1180px;
+  --gutter-base: 16px;
+  --gutter: max(var(--gutter-base), env(safe-area-inset-left), env(safe-area-inset-right));
+  color-scheme: light;
   --font-display: "Sora", sans-serif;
   --font-body: "Noto Sans Thai", sans-serif;
 }
@@ -30,6 +34,9 @@
 
 html {
   scroll-behavior: smooth;
+  /* iOS Safari inflates text on rotation to landscape without this */
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
 }
 
 body {
@@ -41,6 +48,8 @@ body {
   font-size: 16px;
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-tap-highlight-color: transparent;
 }
 
 a {
@@ -57,7 +66,10 @@ textarea {
 main {
   position: relative;
   min-height: 100vh;
+  min-height: 100dvh;
+  /* clip keeps position: sticky working; hidden is the pre-Safari-16 fallback */
   overflow-x: hidden;
+  overflow-x: clip;
 }
 
 .identity-section,
@@ -106,25 +118,32 @@ main {
     linear-gradient(135deg, rgba(255, 145, 77, 0.13), transparent 34%),
     linear-gradient(315deg, rgba(40, 106, 86, 0.08), transparent 38%);
   background-size: 48px 48px, 48px 48px, 100% 100%, 100% 100%;
+  -webkit-mask-image: linear-gradient(180deg, #000 0%, rgba(0, 0, 0, 0.72) 42%, transparent 86%);
   mask-image: linear-gradient(180deg, #000 0%, rgba(0, 0, 0, 0.72) 42%, transparent 86%);
 }
 
 /* ── Header ── */
-.site-header {
+.header-shell {
   position: sticky;
   top: 0;
   z-index: 20;
+  padding-top: max(16px, env(safe-area-inset-top));
+}
+
+.site-header {
+  position: relative;
   display: grid;
   grid-template-columns: auto 1fr auto;
   align-items: center;
   gap: 24px;
-  width: min(1180px, calc(100% - 32px));
-  margin: 16px auto 0;
+  width: min(var(--shell-max), calc(100% - var(--gutter) * 2));
+  margin: 0 auto;
   padding: 10px 16px;
   border: 1px solid rgba(234, 216, 202, 0.78);
   border-radius: var(--radius-lg);
   background: rgba(255, 253, 249, 0.88);
   box-shadow: var(--shadow-sm);
+  -webkit-backdrop-filter: blur(18px) saturate(140%);
   backdrop-filter: blur(18px) saturate(140%);
 }
 
@@ -136,8 +155,10 @@ main {
   transition: opacity 0.2s;
 }
 
-.brand:hover {
-  opacity: 0.85;
+@media (hover: hover) and (pointer: fine) {
+  .brand:hover {
+    opacity: 0.85;
+  }
 }
 
 .brand img,
@@ -177,9 +198,11 @@ main {
   transition: background 0.2s, color 0.2s;
 }
 
-.desktop-nav a:hover {
-  background: var(--soft);
-  color: var(--ink);
+@media (hover: hover) and (pointer: fine) {
+  .desktop-nav a:hover {
+    background: var(--soft);
+    color: var(--ink);
+  }
 }
 
 .header-cta,
@@ -205,10 +228,12 @@ main {
   box-shadow: 0 4px 16px var(--volcanap-glow);
 }
 
-.header-cta:hover,
-.primary-button:hover:not(:disabled) {
-  transform: translateY(-1px);
-  box-shadow: 0 6px 24px var(--volcanap-glow);
+@media (hover: hover) and (pointer: fine) {
+  .header-cta:hover,
+  .primary-button:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 24px var(--volcanap-glow);
+  }
 }
 
 .secondary-button {
@@ -217,9 +242,11 @@ main {
   color: var(--ink);
 }
 
-.secondary-button:hover {
-  background: var(--soft);
-  border-color: rgba(204, 68, 0, 0.3);
+@media (hover: hover) and (pointer: fine) {
+  .secondary-button:hover {
+    background: var(--soft);
+    border-color: rgba(204, 68, 0, 0.3);
+  }
 }
 
 .header-cta:focus-visible,
@@ -246,21 +273,29 @@ main {
   transition: background 0.2s;
 }
 
-.menu-button:hover {
-  background: var(--soft);
+@media (hover: hover) and (pointer: fine) {
+  .menu-button:hover {
+    background: var(--soft);
+  }
 }
 
 .mobile-nav {
-  position: fixed;
-  top: 86px;
-  left: 16px;
-  right: 16px;
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  right: 0;
   z-index: 19;
   display: grid;
-  width: calc(100vw - 32px);
-  max-width: none;
+  width: min(var(--shell-max), calc(100% - var(--gutter) * 2));
+  margin-inline: auto;
   gap: 4px;
   padding: 12px;
+  /* leaves the header visible and scrolls instead of overflowing on short
+     landscape screens */
+  max-height: calc(100vh - 7.5rem);
+  max-height: calc(100dvh - 7.5rem);
+  overflow-y: auto;
+  overscroll-behavior: contain;
   border: 1px solid var(--line);
   border-radius: var(--radius);
   background: rgba(255, 253, 249, 0.98);
@@ -286,9 +321,11 @@ main {
   transition: background 0.2s, color 0.2s;
 }
 
-.mobile-nav a:hover {
-  background: var(--soft);
-  color: var(--ink);
+@media (hover: hover) and (pointer: fine) {
+  .mobile-nav a:hover {
+    background: var(--soft);
+    color: var(--ink);
+  }
 }
 
 .mobile-nav-cta {
@@ -308,7 +345,7 @@ main {
 .section-shell {
   position: relative;
   z-index: 1;
-  width: min(1180px, calc(100% - 32px));
+  width: min(var(--shell-max), calc(100% - var(--gutter) * 2));
   margin: 0 auto;
 }
 
@@ -319,6 +356,7 @@ main {
   align-items: center;
   gap: 54px;
   min-height: min(760px, calc(100vh - 116px));
+  min-height: min(760px, calc(100dvh - 116px));
   padding: 44px 0 50px;
 }
 
@@ -507,6 +545,7 @@ h3 {
     linear-gradient(rgba(24, 20, 17, 0.055) 1px, transparent 1px),
     linear-gradient(90deg, rgba(24, 20, 17, 0.055) 1px, transparent 1px);
   background-size: 36px 36px;
+  -webkit-mask-image: linear-gradient(90deg, rgba(0, 0, 0, 0.75), transparent 86%);
   mask-image: linear-gradient(90deg, rgba(0, 0, 0, 0.75), transparent 86%);
 }
 
@@ -664,7 +703,7 @@ h3 {
   z-index: 1;
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 1px;
+  padding-inline: max(var(--gutter), calc((100% - var(--shell-max)) / 2));
   background: #1f2f2a;
   border-block: 1px solid rgba(255, 255, 255, 0.08);
 }
@@ -673,9 +712,15 @@ h3 {
   display: flex;
   gap: 16px;
   align-items: flex-start;
-  padding: 28px max(16px, calc((100vw - 1180px) / 2));
+  padding: 28px 0;
   background: transparent;
   color: var(--white);
+}
+
+.trust-item + .trust-item {
+  padding-left: 32px;
+  margin-left: 32px;
+  border-left: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .trust-icon {
@@ -831,10 +876,12 @@ h3 {
   opacity: 0.74;
 }
 
-.service-card:hover {
-  transform: translateY(-3px);
-  border-color: rgba(204, 68, 0, 0.3);
-  box-shadow: var(--shadow);
+@media (hover: hover) and (pointer: fine) {
+  .service-card:hover {
+    transform: translateY(-3px);
+    border-color: rgba(204, 68, 0, 0.3);
+    box-shadow: var(--shadow);
+  }
 }
 
 .icon-tile {
@@ -929,9 +976,11 @@ h3 {
   box-shadow: var(--shadow-sm);
 }
 
-.agency-card:hover {
-  transform: none;
-  border-color: rgba(204, 68, 0, 0.24);
+@media (hover: hover) and (pointer: fine) {
+  .agency-card:hover {
+    transform: none;
+    border-color: rgba(204, 68, 0, 0.24);
+  }
 }
 
 .agency-logo-wrap {
@@ -1013,9 +1062,11 @@ h3 {
   opacity: 0.72;
 }
 
-.process-step:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-sm);
+@media (hover: hover) and (pointer: fine) {
+  .process-step:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-sm);
+  }
 }
 
 .process-number {
@@ -1068,8 +1119,10 @@ h3 {
   transition: color 0.2s;
 }
 
-a.contact-item:hover {
-  color: var(--volcanap-deep);
+@media (hover: hover) and (pointer: fine) {
+  a.contact-item:hover {
+    color: var(--volcanap-deep);
+  }
 }
 
 .contact-item svg {
@@ -1120,9 +1173,11 @@ a.contact-item:hover {
   text-align: left;
 }
 
-.option:hover {
-  border-color: rgba(204, 68, 0, 0.35);
-  background: var(--soft);
+@media (hover: hover) and (pointer: fine) {
+  .option:hover {
+    border-color: rgba(204, 68, 0, 0.35);
+    background: var(--soft);
+  }
 }
 
 .option small {
@@ -1149,9 +1204,11 @@ a.contact-item:hover {
   font-size: 0.88rem;
 }
 
-.timeline-control button:hover {
-  border-color: rgba(40, 106, 86, 0.4);
-  background: rgba(40, 106, 86, 0.06);
+@media (hover: hover) and (pointer: fine) {
+  .timeline-control button:hover {
+    border-color: rgba(40, 106, 86, 0.4);
+    background: rgba(40, 106, 86, 0.06);
+  }
 }
 
 .timeline-control button.active {
@@ -1212,6 +1269,16 @@ a.contact-item:hover {
   margin-top: 2px;
 }
 
+/* only the address needs to break at an arbitrary character; the prose
+   inherits the global `anywhere` from p otherwise */
+.success-message span {
+  overflow-wrap: break-word;
+}
+
+.success-message strong {
+  overflow-wrap: anywhere;
+}
+
 /* ── Footer ── */
 .site-footer {
   position: relative;
@@ -1220,7 +1287,8 @@ a.contact-item:hover {
   grid-template-columns: auto 1fr auto;
   align-items: center;
   gap: 24px;
-  padding: 28px max(16px, calc((100vw - 1180px) / 2));
+  padding: 28px max(var(--gutter), calc((100% - var(--shell-max)) / 2));
+  padding-bottom: calc(28px + env(safe-area-inset-bottom));
   border-top: 1px solid var(--line);
   background: var(--ink-soft);
   color: var(--white);
@@ -1258,9 +1326,11 @@ a.contact-item:hover {
   transition: background 0.2s, color 0.2s;
 }
 
-.footer-nav a:hover {
-  background: rgba(255, 255, 255, 0.08);
-  color: var(--white);
+@media (hover: hover) and (pointer: fine) {
+  .footer-nav a:hover {
+    background: rgba(255, 255, 255, 0.08);
+    color: var(--white);
+  }
 }
 
 .footer-tagline {
@@ -1274,6 +1344,10 @@ a.contact-item:hover {
 
 /* ── Responsive ── */
 @media (max-width: 1180px) {
+  .process-steps {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
   .landing-hero {
     grid-template-columns: minmax(0, 0.98fr) minmax(360px, 0.72fr);
     gap: 36px;
@@ -1345,6 +1419,7 @@ a.contact-item:hover {
 
   .delivery-map::after {
     inset: 8px 0 8px 52px;
+    -webkit-mask-image: linear-gradient(90deg, rgba(0, 0, 0, 0.56), transparent 90%);
     mask-image: linear-gradient(90deg, rgba(0, 0, 0, 0.56), transparent 90%);
   }
 
@@ -1364,10 +1439,6 @@ a.contact-item:hover {
   }
 
   .service-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .process-steps {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
@@ -1391,9 +1462,16 @@ a.contact-item:hover {
 }
 
 @media (max-width: 680px) {
-  .section-shell,
-  .site-header {
-    width: min(100% - 24px, 1180px);
+  :root {
+    --gutter-base: 12px;
+  }
+
+  .trust-item + .trust-item {
+    padding-left: 0;
+    margin-left: 0;
+    padding-top: 24px;
+    border-left: 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
   }
 
   .brand strong {
@@ -1579,11 +1657,6 @@ a.contact-item:hover {
     grid-template-columns: 1fr;
   }
 
-  .trust-item {
-    padding-inline: 16px;
-    padding-block: 24px;
-  }
-
   .case-layout,
   .contact-section {
     gap: 32px;
@@ -1608,13 +1681,16 @@ a.contact-item:hover {
     font-size: 15px;
   }
 
-  .section-shell,
-  .site-header {
-    width: min(100% - 20px, 1180px);
+  :root {
+    --gutter-base: 10px;
+  }
+
+  .header-shell {
+    padding-top: max(12px, env(safe-area-inset-top));
   }
 
   .site-header {
-    margin-top: 12px;
+    gap: 12px;
     padding: 8px 10px;
   }
 
@@ -1638,12 +1714,6 @@ a.contact-item:hover {
   .menu-button {
     width: 42px;
     height: 42px;
-  }
-
-  .mobile-nav {
-    left: 10px;
-    right: 10px;
-    width: calc(100vw - 20px);
   }
 
   .hero-brand-name {
@@ -1712,5 +1782,78 @@ a.contact-item:hover {
 
   .estimate-total {
     padding: 16px;
+  }
+}
+
+/* ── Large desktop / 1440p+ : let the grid breathe instead of stranding
+      the content in a 1180px column ── */
+@media (min-width: 1600px) {
+  :root {
+    --shell-max: 1320px;
+  }
+
+  .landing-hero {
+    gap: 72px;
+  }
+
+  .service-grid,
+  .process-steps {
+    gap: 18px;
+  }
+}
+
+/* ── Touch devices: 44px minimum hit targets ── */
+@media (pointer: coarse) {
+  .desktop-nav a,
+  .mobile-nav a {
+    display: flex;
+    align-items: center;
+    min-height: 46px;
+  }
+
+  .footer-nav a {
+    padding: 12px 14px;
+  }
+
+  .contact-item {
+    min-height: 44px;
+  }
+
+  .option,
+  .timeline-control button {
+    min-height: 48px;
+  }
+}
+
+/* ── Short landscape (phone rotated, split-screen tablet) ── */
+@media (orientation: landscape) and (max-height: 540px) {
+  .landing-hero {
+    min-height: auto;
+    padding-top: 28px;
+    padding-bottom: 24px;
+    gap: 28px;
+  }
+
+  .delivery-map {
+    min-height: auto;
+  }
+
+  .section-heading {
+    padding-top: 52px;
+    padding-bottom: 24px;
+  }
+
+  .identity-section {
+    padding: 44px 0;
+  }
+
+  .case-layout,
+  .contact-section {
+    padding-block: 52px;
+  }
+
+  .service-grid,
+  .process-steps {
+    padding-bottom: 52px;
   }
 }

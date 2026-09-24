@@ -1,7 +1,8 @@
 "use client";
 
-import { ArrowRight, CheckCircle2 } from "lucide-react";
+import { CheckCircle2, Mail } from "lucide-react";
 import { useMemo, useState } from "react";
+import { COMPANY_EMAIL, COMPANY_NAME } from "../site";
 
 const projectOptions = [
   { id: "website", label: "Corporate Website", price: 35000 },
@@ -30,29 +31,59 @@ export function ScopeEstimator() {
   const [timeline, setTimeline] = useState(timelineOptions[1].id);
   const [submitted, setSubmitted] = useState(false);
 
+  const chosen = useMemo(
+    () => projectOptions.filter((option) => selected.includes(option.id)),
+    [selected]
+  );
+
   const estimate = useMemo(() => {
-    const base = selected.reduce((sum, id) => {
-      const item = projectOptions.find((option) => option.id === id);
-      return sum + (item?.price ?? 0);
-    }, 0);
+    const base = chosen.reduce((sum, option) => sum + option.price, 0);
     const multiplier = timelineOptions.find((t) => t.id === timeline)?.multiplier ?? 1;
     return Math.round(base * multiplier);
-  }, [selected, timeline]);
+  }, [chosen, timeline]);
+
+  // Opens the visitor's own mail client with a draft addressed to us, so the
+  // reply-to is their real address and no form backend is needed. Kept short
+  // on purpose: encoded Thai costs 9 chars each and Windows truncates a
+  // mailto URL past roughly 2,000.
+  const mailtoHref = useMemo(() => {
+    const timelineLabel = timelineOptions.find((t) => t.id === timeline)?.label ?? "";
+    const subject = `ขอประเมิน Scope: ${chosen.map((option) => option.label).join(", ")}`;
+    const body = [
+      `เรียน ทีม ${COMPANY_NAME}`,
+      "",
+      "■ ขอบเขตงานที่สนใจ",
+      ...chosen.map((option) => `- ${option.label} (${formatBaht(option.price)}+)`),
+      "",
+      "■ ระยะเวลา",
+      timelineLabel,
+      "",
+      "■ งบเริ่มต้นโดยประมาณ",
+      formatBaht(estimate),
+      "",
+      "■ ผู้ติดต่อ",
+      "ชื่อ: ",
+      "บริษัท: ",
+      "โทร: ",
+      "",
+      "■ รายละเอียดเพิ่มเติม",
+      "",
+      "",
+      "ขอบคุณครับ/ค่ะ"
+    ].join("\r\n");
+
+    return `mailto:${COMPANY_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+  }, [chosen, estimate, timeline]);
 
   function toggleOption(id: string) {
     setSelected((current) =>
       current.includes(id) ? current.filter((item) => item !== id) : [...current, id]
     );
+    setSubmitted(false);
   }
 
   return (
-    <form
-      className="estimate-card"
-      onSubmit={(event) => {
-        event.preventDefault();
-        setSubmitted(true);
-      }}
-    >
+    <form className="estimate-card" onSubmit={(event) => event.preventDefault()}>
       <div className="form-group">
         <label>เลือกประเภทงาน</label>
         <div className="option-grid">
@@ -61,6 +92,7 @@ export function ScopeEstimator() {
               className={selected.includes(option.id) ? "option active" : "option"}
               key={option.id}
               type="button"
+              aria-pressed={selected.includes(option.id)}
               onClick={() => toggleOption(option.id)}
             >
               <span>{option.label}</span>
@@ -77,6 +109,7 @@ export function ScopeEstimator() {
               className={timeline === option.id ? "active" : ""}
               key={option.id}
               type="button"
+              aria-pressed={timeline === option.id}
               onClick={() => setTimeline(option.id)}
             >
               {option.label}
@@ -86,16 +119,31 @@ export function ScopeEstimator() {
       </div>
       <div className="estimate-total">
         <span>งบเริ่มต้นโดยประมาณ</span>
-        <strong>{selected.length ? formatBaht(estimate) : "เลือก scope ก่อน"}</strong>
+        <strong>{chosen.length ? formatBaht(estimate) : "เลือก scope ก่อน"}</strong>
       </div>
-      <button className="primary-button full-width" type="submit" disabled={!selected.length}>
-        ส่ง scope เบื้องต้น
-        <ArrowRight size={18} aria-hidden="true" />
-      </button>
+      {chosen.length ? (
+        <a
+          className="primary-button full-width"
+          href={mailtoHref}
+          onClick={() => setSubmitted(true)}
+        >
+          ร่างอีเมลส่ง scope
+          <Mail size={18} aria-hidden="true" />
+        </a>
+      ) : (
+        <button className="primary-button full-width" type="button" disabled>
+          ร่างอีเมลส่ง scope
+          <Mail size={18} aria-hidden="true" />
+        </button>
+      )}
       {submitted && (
         <p className="success-message">
           <CheckCircle2 size={18} aria-hidden="true" />
-          รับ scope แล้ว ทีม VOLCANAP สามารถนำชุดตัวเลือกนี้ไปคุย requirement ต่อได้ทันที
+          <span>
+            เปิดโปรแกรมอีเมลพร้อมร่างข้อความแล้ว กรุณากรอกข้อมูลผู้ติดต่อแล้วกดส่งถึง{" "}
+            <strong>{COMPANY_EMAIL}</strong> หากโปรแกรมอีเมลไม่เปิดขึ้นมา
+            สามารถส่งรายละเอียดมาที่อีเมลนี้ได้โดยตรง
+          </span>
         </p>
       )}
     </form>
