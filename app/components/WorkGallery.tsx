@@ -2,23 +2,44 @@
 
 import Image from "next/image";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { ChevronLeft, ChevronRight, Monitor, Smartphone, X } from "lucide-react";
+import { Box, ChevronLeft, ChevronRight, Monitor, Smartphone, X } from "lucide-react";
 import type { WorkImage } from "../works";
+import { Phrases, plainText } from "./Phrases";
 
 type Filter = "all" | WorkImage["device"];
 
 const FILTERS: { value: Filter; label: string }[] = [
   { value: "all", label: "ทั้งหมด" },
   { value: "desktop", label: "Desktop" },
-  { value: "mobile", label: "Mobile" }
+  { value: "mobile", label: "Mobile" },
+  { value: "media", label: "3D & สื่อ" }
 ];
 
+// Rendered widths of each tile in .gallery-grid (shell 1180px, 1320px from 1600px wide).
+// Keep in sync with the gallery-item spans in globals.css, or thumbnails load too small and look blurry.
+const THUMB_SIZES: Record<WorkImage["device"] | "wide", string> = {
+  desktop: "(max-width: 680px) 94vw, (max-width: 980px) 46vw, (min-width: 1600px) 650px, 580px",
+  wide: "(max-width: 680px) 94vw, (max-width: 980px) 70vw, (min-width: 1600px) 980px, 880px",
+  mobile: "(max-width: 680px) 46vw, (max-width: 980px) 23vw, (min-width: 1600px) 310px, 280px",
+  media: "(max-width: 680px) 46vw, (max-width: 980px) 46vw, (min-width: 1600px) 310px, 280px"
+};
+
+// Screenshots are mostly small text, so thumbnails use a higher quality than the default 75
+const THUMB_QUALITY = 85;
+
 function DeviceFrame({ image, sizes }: { image: WorkImage; sizes: string }) {
+  if (image.device === "media") {
+    return (
+      <div className="gallery-media">
+        <Image src={image.src} alt={image.alt} width={image.width} height={image.height} sizes={sizes} quality={THUMB_QUALITY} />
+      </div>
+    );
+  }
   if (image.device === "mobile") {
     return (
       <div className="gallery-phone">
         <span className="gallery-phone-notch" aria-hidden="true" />
-        <Image src={image.src} alt={image.alt} width={image.width} height={image.height} sizes={sizes} />
+        <Image src={image.src} alt={image.alt} width={image.width} height={image.height} sizes={sizes} quality={THUMB_QUALITY} />
       </div>
     );
   }
@@ -29,7 +50,7 @@ function DeviceFrame({ image, sizes }: { image: WorkImage; sizes: string }) {
         <span />
         <span />
       </div>
-      <Image src={image.src} alt={image.alt} width={image.width} height={image.height} sizes={sizes} />
+      <Image src={image.src} alt={image.alt} width={image.width} height={image.height} sizes={sizes} quality={THUMB_QUALITY} />
     </div>
   );
 }
@@ -41,7 +62,7 @@ export function WorkGallery({ images }: { images: WorkImage[] }) {
   const touchX = useRef<number | null>(null);
 
   const visible = filter === "all" ? images : images.filter((image) => image.device === filter);
-  const hasBoth = images.some((i) => i.device === "desktop") && images.some((i) => i.device === "mobile");
+  const filters = FILTERS.filter((f) => f.value === "all" || images.some((image) => image.device === f.value));
 
   const step = useCallback(
     (delta: number) => setOpen((current) => (current === null ? null : (current + delta + visible.length) % visible.length)),
@@ -69,12 +90,15 @@ export function WorkGallery({ images }: { images: WorkImage[] }) {
   }, [open, step]);
 
   const current = open === null ? null : visible[open];
+  // With an odd number of desktop shots, the last one widens to share a row with a phone
+  const desktops = visible.filter((image) => image.device === "desktop");
+  const wideSrc = desktops.length % 2 === 1 && visible.some((i) => i.device === "mobile") ? desktops[desktops.length - 1].src : null;
 
   return (
     <>
-      {hasBoth && (
+      {filters.length > 2 && (
         <div className="gallery-filters" role="tablist" aria-label="กรองภาพตามอุปกรณ์">
-          {FILTERS.map((f) => (
+          {filters.map((f) => (
             <button
               key={f.value}
               type="button"
@@ -85,6 +109,7 @@ export function WorkGallery({ images }: { images: WorkImage[] }) {
             >
               {f.value === "desktop" && <Monitor size={15} aria-hidden="true" />}
               {f.value === "mobile" && <Smartphone size={15} aria-hidden="true" />}
+              {f.value === "media" && <Box size={15} aria-hidden="true" />}
               {f.label}
             </button>
           ))}
@@ -93,14 +118,19 @@ export function WorkGallery({ images }: { images: WorkImage[] }) {
 
       <ul className={`gallery-grid gallery-grid--${filter}`}>
         {visible.map((image, index) => (
-          <li key={image.src} className={`gallery-item gallery-item--${image.device}`}>
-            <button type="button" className="gallery-open" onClick={() => setOpen(index)} aria-label={`ดูภาพขยาย: ${image.caption}`}>
+          <li
+            key={image.src}
+            className={`gallery-item gallery-item--${image.device}${image.src === wideSrc ? " gallery-item--wide" : ""}`}
+          >
+            <button type="button" className="gallery-open" onClick={() => setOpen(index)} aria-label={`ดูภาพขยาย: ${plainText(image.caption)}`}>
               <DeviceFrame
                 image={image}
-                sizes={image.device === "mobile" ? "(max-width: 680px) 45vw, 220px" : "(max-width: 680px) 92vw, (max-width: 980px) 46vw, 380px"}
+                sizes={THUMB_SIZES[image.src === wideSrc ? "wide" : image.device]}
               />
             </button>
-            <p className="gallery-caption">{image.caption}</p>
+            <p className="gallery-caption">
+              <Phrases text={image.caption} />
+            </p>
           </li>
         ))}
       </ul>
@@ -136,7 +166,9 @@ export function WorkGallery({ images }: { images: WorkImage[] }) {
               priority
             />
             <figcaption>
-              <span>{current.caption}</span>
+              <span>
+                <Phrases text={current.caption} />
+              </span>
               <span className="gallery-counter">
                 {open! + 1} / {visible.length}
               </span>

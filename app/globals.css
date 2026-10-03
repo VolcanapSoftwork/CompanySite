@@ -21,7 +21,8 @@
   --radius: 8px;
   --radius-lg: 16px;
   --shell-max: 1180px;
-  --gutter-base: 16px;
+  /* scales with the viewport on tablets; phones override this below */
+  --gutter-base: clamp(16px, 4vw, 40px);
   --gutter: max(var(--gutter-base), env(safe-area-inset-left), env(safe-area-inset-right));
   color-scheme: light;
   --font-display: "Sora", sans-serif;
@@ -403,7 +404,20 @@ h1,
 h2,
 h3,
 p {
-  overflow-wrap: anywhere;
+  overflow-wrap: break-word;
+}
+
+/* Balanced headings and no orphaned last words; Thai has no spaces, so
+   browsers otherwise leave one short word alone on the final line */
+h1,
+h2,
+h3 {
+  text-wrap: balance;
+}
+
+p,
+li {
+  text-wrap: pretty;
 }
 
 h1,
@@ -954,6 +968,10 @@ h3 {
   font-size: 1.02rem;
 }
 
+.case-intro .case-copy {
+  text-wrap: balance;
+}
+
 .case-tags {
   display: flex;
   flex-wrap: wrap;
@@ -1235,16 +1253,33 @@ h3 {
 @media (max-width: 980px) {
   .work-hero-main,
   .work-hero-main--shot {
+    grid-template-columns: minmax(0, 1fr) minmax(220px, 0.7fr);
+    gap: 32px;
+  }
+
+  .work-hero-logo {
+    width: min(100%, 200px);
+  }
+
+  .work-shot > img {
+    max-height: 440px;
+  }
+}
+
+@media (max-width: 760px) {
+  .work-hero-main,
+  .work-hero-main--shot {
     grid-template-columns: 1fr;
     gap: 40px;
   }
 
-  .work-hero-visual {
-    justify-content: flex-start;
-  }
-
   .work-hero-logo {
     width: 160px;
+  }
+
+  .work-shot {
+    max-width: 420px;
+    margin-inline: auto;
   }
 
   .work-shot > img {
@@ -1257,9 +1292,7 @@ h3 {
     width: 72px;
     height: 72px;
   }
-}
 
-@media (max-width: 760px) {
   .work-challenges,
   .work-stack {
     grid-template-columns: 1fr;
@@ -2107,6 +2140,7 @@ h3 {
 /* ── Work gallery ─────────────────────────────────────────── */
 .gallery-filters {
   display: inline-flex;
+  flex-wrap: wrap;
   gap: 4px;
   margin-bottom: 20px;
   padding: 4px;
@@ -2125,6 +2159,7 @@ h3 {
   background: transparent;
   color: var(--muted);
   font: 600 14px/1.4 var(--font-body);
+  white-space: nowrap;
   cursor: pointer;
 }
 
@@ -2149,6 +2184,33 @@ h3 {
 
 .gallery-item--mobile {
   grid-column: span 3;
+}
+
+/* a lone desktop shot pairs with a phone (9 + 3) instead of leaving a gap */
+.gallery-item--wide {
+  grid-column: span 9;
+}
+
+/* 3D renders and posters: 4 per row */
+.gallery-item--media {
+  grid-column: span 3;
+}
+
+.gallery-media {
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--white);
+  box-shadow: var(--shadow-sm);
+}
+
+.gallery-media img {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 6 / 5;
+  object-fit: cover;
+  object-position: top;
 }
 
 .gallery-open {
@@ -2340,7 +2402,7 @@ h3 {
 }
 
 @media (max-width: 980px) {
-  .gallery-item--mobile {
+  .gallery-item--media {
     grid-column: span 6;
   }
 }
@@ -2350,8 +2412,24 @@ h3 {
     gap: 22px 14px;
   }
 
-  .gallery-item--desktop {
+  .gallery-item--desktop,
+  .gallery-item--wide {
     grid-column: span 12;
+  }
+
+  .gallery-item--mobile,
+  .gallery-item--media {
+    grid-column: span 6;
+  }
+
+  .gallery-filters {
+    gap: 2px;
+  }
+
+  .gallery-filters button {
+    gap: 4px;
+    padding: 6px 10px;
+    font-size: 13px;
   }
 
   .gallery-lightbox {
@@ -2378,4 +2456,12 @@ h3 {
   .gallery-open {
     transition: none;
   }
+}
+
+/* Phrases helper: keep a phrase on one line. Kept last and reset with
+   `all: unset` so rules like ".delivery-map-core span { display: block }"
+   don't restyle it; font and colour still inherit from the parent. */
+span.nowrap {
+  all: unset;
+  white-space: nowrap;
 }

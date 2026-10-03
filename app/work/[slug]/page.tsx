@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, ArrowRight, CheckCircle2, ExternalLink } from "lucide-react";
+import { Phrases, plainText } from "../../components/Phrases";
 import { SiteFooter } from "../../components/SiteFooter";
 import { SiteHeader } from "../../components/SiteHeader";
 import { WorkGallery } from "../../components/WorkGallery";
@@ -22,7 +23,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!work) return {};
   return {
     title: `${work.name.join(" ")} | ${COMPANY_NAME}`,
-    description: work.detail.overview
+    description: plainText(work.detail.overview)
   };
 }
 
@@ -56,7 +57,9 @@ export default async function WorkDetailPage({ params }: Props) {
                   </span>
                 ))}
               </h1>
-              <p className="case-copy">{detail.overview}</p>
+              <p className="case-copy">
+                <Phrases text={detail.overview} />
+              </p>
               <div className="case-tags">
                 {work.tags.map((tag) => (
                   <span key={tag}>{tag}</span>
@@ -124,7 +127,9 @@ export default async function WorkDetailPage({ params }: Props) {
         </div>
         <ul className="work-challenges">
           {detail.challenges.map((item) => (
-            <li key={item}>{item}</li>
+            <li key={item}>
+              <Phrases text={item} />
+            </li>
           ))}
         </ul>
       </section>
@@ -141,7 +146,9 @@ export default async function WorkDetailPage({ params }: Props) {
                 <CheckCircle2 size={22} />
               </div>
               <h3>{item.title}</h3>
-              <p>{item.text}</p>
+              <p>
+                <Phrases text={item.text} />
+              </p>
             </article>
           ))}
         </div>

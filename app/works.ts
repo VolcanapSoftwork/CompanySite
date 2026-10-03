@@ -1,4 +1,4 @@
-import { BarChart3, FileCheck2, Layers3, Sparkles, type LucideIcon } from "lucide-react";
+import { Box, type LucideIcon } from "lucide-react";
 
 export type WorkDetail = {
   overview: string;
@@ -12,7 +12,8 @@ export type WorkImage = {
   alt: string;
   width: number;
   height: number;
-  device: "desktop" | "mobile";
+  // media = 3D renders, posters and other non-screen images (shown without a device frame)
+  device: "desktop" | "mobile" | "media";
   caption: string;
 };
 
@@ -34,6 +35,7 @@ export type Work = {
 // Screenshot sizes captured from the live site (desktop 1440×900 @1.5x, mobile 390×844 @2x)
 const DESKTOP = { width: 2160, height: 1350, device: "desktop" } as const;
 const MOBILE = { width: 780, height: 1688, device: "mobile" } as const;
+const MODEL = { width: 1260, height: 1080, device: "media" } as const;
 
 export const works: Work[] = [
   {
@@ -60,26 +62,26 @@ export const works: Work[] = [
       { src: "/works/tatip/desktop-home-zh.webp", alt: "หน้าแรกภาษาจีน", caption: "รองรับภาษาจีน", ...DESKTOP },
       { src: "/works/tatip/mobile-home.webp", alt: "หน้าแรกบนมือถือ", caption: "หน้าแรกบนมือถือ", ...MOBILE },
       { src: "/works/tatip/mobile-reporting.webp", alt: "หน้าแจ้งเบาะแสบนมือถือ", caption: "แจ้งเบาะแสบนมือถือ", ...MOBILE },
-      { src: "/works/tatip/mobile-reporting-form.webp", alt: "ฟอร์มเบาะแสบนมือถือ", caption: "ฟอร์มที่ปรับให้กรอกง่ายบนจอเล็ก", ...MOBILE },
+      { src: "/works/tatip/mobile-reporting-form.webp", alt: "ฟอร์มเบาะแสบนมือถือ", caption: "ฟอร์มที่ปรับ|ให้กรอกง่าย|บนจอเล็ก", ...MOBILE },
       { src: "/works/tatip/mobile-following.webp", alt: "หน้าติดตามสถานะบนมือถือ", caption: "ติดตามสถานะบนมือถือ", ...MOBILE }
     ],
     detail: {
       overview:
-        "ระบบแจ้งเบาะแสคดีค้ามนุษย์ (Human Trafficking Case Reporting System) แบ่งเป็น 2 ส่วน คือเว็บไซต์ให้ประชาชนแจ้งเบาะแสแบบปกปิดตัวตนได้ และระบบหลังบ้านให้เจ้าหน้าที่ตำรวจคัดกรอง มอบหมาย ติดตาม และวิเคราะห์คดี ใช้ฐานข้อมูลกลางร่วมกันบน Cloud พัฒนาโดยร่วมมือกับศูนย์ต่อต้านการค้ามนุษย์ สำนักงานตำรวจแห่งชาติ (TATIP RTP)",
+        "ระบบแจ้งเบาะแสคดีค้ามนุษย์ (Human Trafficking Case Reporting System) แบ่งเป็น 2 ส่วน คือเว็บไซต์ให้ประชาชน|แจ้งเบาะแสแบบปกปิดตัวตนได้ และระบบหลังบ้าน|ให้เจ้าหน้าที่ตำรวจคัดกรอง มอบหมาย ติดตาม และวิเคราะห์คดี ใช้ฐานข้อมูลกลางร่วมกันบน Cloud พัฒนาโดยร่วมมือกับ|ศูนย์ต่อต้านการค้ามนุษย์ สำนักงานตำรวจแห่งชาติ (TATIP RTP)",
       challenges: [
         "เบาะแสกระจายอยู่หลายช่องทาง ทั้งสายด่วน อีเมล และเอกสาร ไม่มีระบบกลางรวบรวม ข้อมูลบางส่วนตกหล่น",
-        "แต่ละหน่วยงานบันทึกข้อมูลคนละรูปแบบ วิเคราะห์ร่วมกันและตรวจสอบย้อนกลับได้ยาก",
-        "เจ้าหน้าที่ต้องตรวจสอบและเชื่อมโยงเบาะแสแบบ manual ใช้เวลานานและผิดพลาดง่าย",
-        "ผู้แจ้งเบาะแสมีความเสี่ยงสูง ระบบต้องปกปิดตัวตนและป้องกันข้อมูลรั่วไหล"
+        "แต่ละหน่วยงาน|บันทึกข้อมูลคนละรูปแบบ วิเคราะห์ร่วมกัน|และตรวจสอบย้อนกลับได้ยาก",
+        "เจ้าหน้าที่ต้องตรวจสอบ|และเชื่อมโยงเบาะแสแบบ manual ใช้เวลานานและผิดพลาดง่าย",
+        "ผู้แจ้งเบาะแสมีความเสี่ยงสูง ระบบต้องปกปิดตัวตน|และป้องกันข้อมูลรั่วไหล"
       ],
       solutions: [
         {
           title: "แจ้งเบาะแสออนไลน์แบบไม่ระบุตัวตน",
-          text: "ฟอร์มใช้งานง่ายทั้งมือถือและคอมพิวเตอร์ เลือกจังหวัด/อำเภอ/ตำบลจาก dropdown แนบรูปหลักฐานได้ และได้รหัสติดตามสถานะเบาะแสหลังส่ง"
+          text: "ฟอร์มใช้งานง่าย|ทั้งมือถือและคอมพิวเตอร์ เลือกจังหวัด/อำเภอ/ตำบลจาก dropdown แนบรูปหลักฐานได้ และได้รหัสติดตามสถานะเบาะแส|หลังส่ง"
         },
         {
           title: "Case Management Workflow",
-          text: "คัดกรองและจัดระดับความรุนแรง 3 ระดับ (Critical / High / Normal) → มอบหมายให้สถานีหรือหน่วยงานในพื้นที่ → บันทึก progress log → ปิดคดี พร้อม SLA Alert เมื่อคดีวิกฤตไม่มีการอัปเดต"
+          text: "คัดกรองและจัดระดับความรุนแรง 3 ระดับ (Critical / High / Normal) → มอบหมายให้สถานี|หรือหน่วยงานในพื้นที่ → บันทึก progress log → ปิดคดี พร้อม SLA Alert เมื่อคดีวิกฤตไม่มีการอัปเดต"
         },
         {
           title: "AI Matching ตรวจเบาะแสซ้ำ",
@@ -87,15 +89,15 @@ export const works: Work[] = [
         },
         {
           title: "AI สรุปเบาะแส",
-          text: "ใช้ Gemini 2.5 Flash Lite สรุปเนื้อหาเบาะแสได้ 3 ภาษา ช่วยให้เจ้าหน้าที่อ่านและคัดกรองได้เร็วขึ้น"
+          text: "ใช้ Gemini 2.5 Flash Lite สรุปเนื้อหาเบาะแสได้ 3 ภาษา ช่วยให้เจ้าหน้าที่|อ่านและคัดกรองได้เร็วขึ้น"
         },
         {
           title: "Dashboard & Heatmap",
-          text: "สถิติเบาะแสตามช่วงเวลาและจังหวัด แผนที่ความหนาแน่นช่วยจัดสรรทรัพยากร export ข้อมูลเป็น PDF / Excel ได้"
+          text: "สถิติเบาะแสตามช่วงเวลาและจังหวัด แผนที่ความหนาแน่น|ช่วยจัดสรรทรัพยากร export ข้อมูลเป็น PDF / Excel ได้"
         },
         {
           title: "Security & PDPA by Design",
-          text: "แยกข้อมูลตัวตนผู้แจ้งออกจากข้อมูลคดี (data decoupling), RBAC, 2FA ผ่าน email OTP, audit trail ทุกการแก้ไข และ signed URL สำหรับไฟล์หลักฐาน"
+          text: "แยกข้อมูลตัวตนผู้แจ้ง|ออกจากข้อมูลคดี (data decoupling), RBAC, 2FA ผ่าน email OTP, audit trail ทุกการแก้ไข และ signed URL สำหรับไฟล์หลักฐาน"
         }
       ],
       techStack: [
@@ -107,102 +109,69 @@ export const works: Work[] = [
     }
   },
   {
-    slug: "executive-dashboard",
-    icon: BarChart3,
-    label: "Dashboard & Reporting",
-    name: ["EXECUTIVE DASHBOARD"],
-    description: "Dashboard สรุปยอดขาย KPI และรายงานรายวันสำหรับผู้บริหาร ดึงข้อมูลจากหลายระบบมาแสดงในที่เดียว",
-    tags: ["Dashboard", "Data Integration", "Reporting"],
+    slug: "diabetes-ar",
+    icon: Box,
+    label: "WebAR & Health Education",
+    name: ["DIABETES AR"],
+    description: "WebAR สื่อความรู้โรคเบาหวาน ส่องกล้องมือถือที่โปสเตอร์ แล้วโมเดล 3D เคลื่อนไหว|ของแต่ละหัวข้อ|จะขึ้นมาให้หมุนดูได้ ไม่ต้องติดตั้งแอป",
+    tags: ["WebAR", "3D Animation", "Health Education"],
+    url: "https://diabetes-ar.netlify.app",
+    screenshot: {
+      src: "/works/diabetes-ar/poster-portrait.webp",
+      alt: "โปสเตอร์ A3 ความรู้เรื่องโรคเบาหวาน 6 หัวข้อ",
+      width: 1400,
+      height: 1978
+    },
+    gallery: [
+      { src: "/works/diabetes-ar/desktop-home.webp", alt: "หน้าแรกบน desktop พร้อมปุ่มสแกน QR และภาพสำหรับสแกน", caption: "หน้าแรก desktop — ปุ่มสแกน, QR และภาพเปิดเต็มจอให้สแกนจากหน้าจอ", ...DESKTOP },
+      { src: "/works/diabetes-ar/mobile-home.webp", alt: "หน้าแรกบนมือถือมีปุ่มสแกนปุ่มเดียว", caption: "หน้าแรกบนมือถือ — ปุ่มสแกนปุ่มเดียว", ...MOBILE },
+      { src: "/works/diabetes-ar/poster-portrait.webp", alt: "โปสเตอร์ A3 แนวตั้ง 6 หัวข้อ", caption: "โปสเตอร์ A3 แนวตั้ง (2×3)", width: 1400, height: 1978, device: "media" },
+      { src: "/works/diabetes-ar/poster-landscape.webp", alt: "โปสเตอร์ A3 แนวนอน 6 หัวข้อ", caption: "โปสเตอร์ A3 แนวนอน (3×2)", width: 1800, height: 1274, device: "media" },
+      { src: "/works/diabetes-ar/model-1-pancreas.webp", alt: "โมเดล 3D ตับอ่อนหลั่งอินซูลินบนกล่องหัวข้อที่ 1", caption: "1. ตับอ่อนหลั่งอินซูลิน → พากลูโคสเข้าเซลล์", ...MODEL },
+      { src: "/works/diabetes-ar/model-2-insulin-cell.webp", alt: "โมเดล 3D เซลล์ผ่าครึ่งกับอินซูลินแบบกุญแจ", caption: "2. อินซูลินเป็นกุญแจ|เปิดเซลล์ เทียบภาวะดื้ออินซูลิน", ...MODEL },
+      { src: "/works/diabetes-ar/model-3-symptoms-body.webp", alt: "โมเดล 3D ตัวละครแสดงอาการเตือน", caption: "3. ตัวละครแสดง|สัญญาณเตือน 6 ท่า", ...MODEL },
+      { src: "/works/diabetes-ar/model-4-blood-vessel.webp", alt: "โมเดล 3D หลอดเลือดผ่าครึ่งพร้อมเครื่องวัดน้ำตาล", caption: "4. หลอดเลือด|เมื่อน้ำตาลสูงขึ้น พร้อมเครื่องวัด", ...MODEL },
+      { src: "/works/diabetes-ar/model-5-complications.webp", alt: "โมเดล 3D หัวใจ ไต ตา และเท้า", caption: "5. ภาวะแทรกซ้อนที่หัวใจ ไต ตา และเท้า", ...MODEL },
+      { src: "/works/diabetes-ar/model-6-healthy-plate.webp", alt: "โมเดล 3D จานสุขภาพ 2:1:1", caption: "6. จานสุขภาพ 2:1:1 และการออกกำลังกาย", ...MODEL }
+    ],
     detail: {
       overview:
-        "Dashboard สำหรับผู้บริหาร รวมข้อมูลยอดขาย สต็อก และ KPI จากหลายระบบไว้ในหน้าเดียว อัปเดตอัตโนมัติรายวัน",
+        "Web AR สำหรับให้ความรู้เรื่องโรคเบาหวาน ใช้คู่กับอินโฟกราฟิก A3 ที่มี 6 หัวข้อ ส่องกล้องมือถือที่กล่องไหน โมเดล 3D เคลื่อนไหวของหัวข้อนั้น|จะขึ้นมาล็อกกลางจอ|ให้หมุนและซูมดูได้ ทำงานบนเบราว์เซอร์ทั้ง iOS Safari และ Android Chrome โดยไม่ต้องติดตั้งแอป",
       challenges: [
-        "ข้อมูลอยู่คนละระบบ ต้องรวม Excel ด้วยมือทุกสัปดาห์",
-        "ผู้บริหารเห็นตัวเลขช้า ตัดสินใจไม่ทันสถานการณ์"
+        "โปสเตอร์และแผ่นพับเป็นภาพนิ่ง อธิบายกลไกในร่างกาย เช่น อินซูลินพากลูโคสเข้าเซลล์ ได้ยาก",
+        "แอป AR ส่วนใหญ่ต้องดาวน์โหลดติดตั้งก่อน ผู้ใช้จำนวนมาก|เลิกใช้ก่อนได้เห็นเนื้อหา",
+        "ต้องใช้ได้ทั้ง iPhone และ Android ซึ่ง Safari บน iPhone ไม่รองรับ WebXR",
+        "เนื้อหาทางการแพทย์|ต้องถูกต้องและเข้าใจง่าย|สำหรับคนทั่วไป"
       ],
       solutions: [
-        { title: "Data Integration", text: "ดึงข้อมูลจาก POS, ERP และ spreadsheet ผ่าน API และ scheduled job" },
-        { title: "KPI Dashboard", text: "กราฟยอดขาย เป้าหมาย และสต็อก กรองตามสาขา ช่วงเวลา และหมวดสินค้า" },
-        { title: "Automated Report", text: "ส่งรายงานสรุปรายวันทางอีเมลอัตโนมัติ" }
+        {
+          title: "Marker-based WebAR",
+          text: "จับภาพกล่องบนโปสเตอร์ด้วย image tracking ในเบราว์เซอร์ ใช้ได้ทั้ง iOS และ Android ไม่ต้องติดตั้งแอป"
+        },
+        {
+          title: "โมเดล 3D เคลื่อนไหว 6 หัวข้อ",
+          text: "ตับอ่อน, เซลล์กับอินซูลิน, ตัวละครแสดงอาการ, หลอดเลือด, อวัยวะที่เกิดภาวะแทรกซ้อน และจานสุขภาพ แต่ละตัวเล่า animation เป็นลำดับขั้น"
+        },
+        {
+          title: "Lock & Interact",
+          text: "สแกนแล้วโมเดลล็อกกลางจอ วางโปสเตอร์ลงได้ ลากเพื่อหมุน จีบเพื่อซูม แตะ 2 ครั้งเพื่อรีเซ็ต"
+        },
+        {
+          title: "เนื้อหาเชิงลึกในแอป",
+          text: "แผ่นข้อมูลแต่ละหัวข้อ|กดอ่านเพิ่มได้ อิงแนวทาง|สมาคมโรคเบาหวานแห่งประเทศไทยและ ADA"
+        },
+        {
+          title: "โปสเตอร์ 2 แบบ + โหมด Desktop",
+          text: "โปสเตอร์ A3 แนวตั้งและแนวนอนพร้อม PDF สำหรับพิมพ์ บน desktop เปิดภาพเต็มจอให้ส่องสแกนจากหน้าจอ หรือสแกน QR เพื่อเปิดบนมือถือ"
+        },
+        {
+          title: "Asset Pipeline & CI/CD",
+          text: "สร้าง marker และโปสเตอร์จากเนื้อหาชุดเดียว มี regression test ด้วยกล้องจำลอง และ deploy อัตโนมัติผ่าน GitHub Actions"
+        }
       ],
       techStack: [
-        { group: "Frontend", items: ["Next.js", "TypeScript", "Chart library"] },
-        { group: "Backend & Data", items: ["Node.js", "PostgreSQL", "Scheduled jobs"] }
-      ]
-    }
-  },
-  {
-    slug: "customer-service-portal",
-    icon: Layers3,
-    label: "Web Application",
-    name: ["CUSTOMER SERVICE PORTAL"],
-    description: "Portal ให้ลูกค้ายื่นคำขอ ติดตามสถานะ และรับแจ้งเตือน พร้อม admin portal สำหรับทีมปฏิบัติงาน",
-    tags: ["Customer Portal", "Admin Portal", "Notification"],
-    detail: {
-      overview:
-        "Portal ให้ลูกค้ายื่นคำขอบริการออนไลน์และติดตามสถานะได้เอง พร้อม admin portal ให้ทีมรับเรื่อง มอบหมาย และปิดงาน",
-      challenges: [
-        "รับเรื่องผ่านโทรศัพท์และ LINE ติดตามสถานะยาก",
-        "ลูกค้าโทรถามสถานะซ้ำ เพิ่มภาระทีม"
-      ],
-      solutions: [
-        { title: "Customer Portal", text: "ยื่นคำขอ แนบเอกสาร และดูสถานะแบบ real-time" },
-        { title: "Admin Portal", text: "คิวงาน มอบหมายผู้รับผิดชอบ และกำหนด SLA" },
-        { title: "Notification", text: "แจ้งเตือนทางอีเมลและ LINE เมื่อสถานะเปลี่ยน" }
-      ],
-      techStack: [
-        { group: "Frontend", items: ["Next.js", "TypeScript", "Tailwind CSS"] },
-        { group: "Backend & Data", items: ["Node.js", "PostgreSQL", "LINE Messaging API"] }
-      ]
-    }
-  },
-  {
-    slug: "document-approval-system",
-    icon: FileCheck2,
-    label: "Workflow Automation",
-    name: ["DOCUMENT APPROVAL SYSTEM"],
-    description: "ระบบอนุมัติเอกสารหลายขั้นตอน กำหนดสิทธิ์ตามตำแหน่ง และเก็บประวัติการอนุมัติสำหรับตรวจสอบย้อนหลัง",
-    tags: ["Workflow", "Role-based Access", "Audit Trail"],
-    detail: {
-      overview:
-        "ระบบส่งและอนุมัติเอกสารออนไลน์หลายขั้นตอน กำหนดสายอนุมัติตามประเภทเอกสารและตำแหน่ง",
-      challenges: [
-        "เอกสารกระดาษเดินช้า ตามไม่ได้ว่าค้างอยู่ที่ใคร",
-        "ตรวจสอบย้อนหลังยากเมื่อมี audit"
-      ],
-      solutions: [
-        { title: "Configurable Workflow", text: "ตั้งสายอนุมัติได้เองตามประเภทเอกสารและวงเงิน" },
-        { title: "Role-based Access", text: "สิทธิ์การเห็นและอนุมัติตามตำแหน่งและหน่วยงาน" },
-        { title: "Audit Trail", text: "เก็บประวัติทุกการแก้ไขและอนุมัติ พร้อม export" }
-      ],
-      techStack: [
-        { group: "Frontend", items: ["Next.js", "TypeScript"] },
-        { group: "Backend & Data", items: ["Node.js", "PostgreSQL", "Object Storage"] }
-      ]
-    }
-  },
-  {
-    slug: "ai-document-classifier",
-    icon: Sparkles,
-    label: "AI & Automation",
-    name: ["AI DOCUMENT CLASSIFIER"],
-    description: "ใช้ AI แยกประเภทเอกสาร ดึงข้อมูลสำคัญ และสรุปเนื้อหา ลดงาน manual ของทีมเอกสาร",
-    tags: ["AI", "OCR", "Automation"],
-    detail: {
-      overview:
-        "ระบบรับเอกสารสแกน แยกประเภทอัตโนมัติ ดึงข้อมูลสำคัญเข้าฐานข้อมูล และสรุปเนื้อหาให้ผู้ตรวจ",
-      challenges: [
-        "เอกสารเข้าวันละหลายร้อยฉบับ คีย์ข้อมูลด้วยมือ",
-        "แยกประเภทผิดบ่อย เอกสารส่งผิดทีม"
-      ],
-      solutions: [
-        { title: "OCR & Extraction", text: "อ่านเอกสารสแกนและดึง field สำคัญ เช่น เลขที่ วันที่ ยอดเงิน" },
-        { title: "AI Classification", text: "แยกประเภทเอกสารและส่งต่อทีมที่รับผิดชอบอัตโนมัติ" },
-        { title: "Human Review", text: "หน้าตรวจทานสำหรับรายการที่ AI ไม่มั่นใจ" }
-      ],
-      techStack: [
-        { group: "AI", items: ["OCR", "LLM API"] },
-        { group: "Backend & Data", items: ["Python", "PostgreSQL", "Queue worker"] }
+        { group: "Frontend & AR", items: ["Next.js 16", "React 19", "TypeScript", "Tailwind CSS", "three.js", "MindAR"] },
+        { group: "Tooling & Deploy", items: ["Playwright", "GitHub Actions", "Netlify"] }
       ]
     }
   }

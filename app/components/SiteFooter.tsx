@@ -1,5 +1,6 @@
 import Image from "next/image";
 import { navItems } from "../site";
+import { Phrases } from "./Phrases";
 
 export function SiteFooter() {
   return (
@@ -19,7 +20,7 @@ export function SiteFooter() {
         ))}
       </nav>
       <p className="footer-tagline">
-        Web systems, dashboards, secure workflows &amp; AI-enabled products.
+        <Phrases text={"Web systems, dashboards, secure workflows &\u00a0AI-enabled products."} />
       </p>
     </footer>
   );

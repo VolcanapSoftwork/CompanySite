@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import { ScopeEstimator } from "./components/ScopeEstimator";
 import { COMPANY_EMAIL, navItems } from "./site";
+import { Phrases } from "./components/Phrases";
 import { SiteFooter } from "./components/SiteFooter";
 import { SiteHeader } from "./components/SiteHeader";
 import { works } from "./works";
@@ -29,32 +30,32 @@ const services = [
   {
     icon: Globe2,
     title: "Custom Software Development",
-    text: "พัฒนาระบบเฉพาะทางตามกระบวนการทำงานจริงขององค์กร ตั้งแต่ระบบภายในจนถึงระบบให้ลูกค้าใช้งาน"
+    text: "พัฒนาระบบเฉพาะทาง|ตามกระบวนการทำงานจริง|ขององค์กร ตั้งแต่ระบบภายใน|จนถึงระบบให้ลูกค้าใช้งาน"
   },
   {
     icon: Layers3,
     title: "Web Application & Portal",
-    text: "สร้างเว็บแอป, customer portal, admin portal และระบบสมาชิกที่ใช้งานง่าย รองรับการขยายในอนาคต"
+    text: "สร้างเว็บแอป, customer\u00a0portal, admin\u00a0portal และระบบสมาชิก|ที่ใช้งานง่าย รองรับการขยาย|ในอนาคต"
   },
   {
     icon: BarChart3,
     title: "Dashboard & Reporting",
-    text: "ออกแบบ dashboard และรายงานสำหรับผู้บริหารหรือทีมปฏิบัติงาน เพื่อเห็นข้อมูลสำคัญได้รวดเร็ว"
+    text: "ออกแบบ dashboard และรายงาน|สำหรับผู้บริหาร|หรือทีมปฏิบัติงาน เพื่อเห็นข้อมูลสำคัญ|ได้รวดเร็ว"
   },
   {
     icon: ShieldCheck,
     title: "System Integration",
-    text: "เชื่อมต่อระบบเดิม, API, database, notification และ workflow หลายส่วนให้ทำงานร่วมกันเป็นระบบเดียว"
+    text: "เชื่อมต่อระบบเดิม, API, database, notification และ workflow หลายส่วน|ให้ทำงานร่วมกัน|เป็นระบบเดียว"
   },
   {
     icon: Sparkles,
     title: "AI & Business Automation",
-    text: "เพิ่ม automation หรือ AI เข้าไปช่วยลดงานซ้ำ แยกประเภทข้อมูล สรุปผล ค้นหา หรือช่วยตัดสินใจเบื้องต้น"
+    text: "เพิ่ม automation หรือ AI เข้าไปช่วย|ลดงานซ้ำ แยกประเภทข้อมูล สรุปผล ค้นหา หรือช่วยตัดสินใจ|เบื้องต้น"
   },
   {
     icon: Rocket,
     title: "Maintenance & Enhancement",
-    text: "ดูแลหลังเปิดใช้งาน แก้ไข ปรับปรุง เพิ่มฟีเจอร์ และทำให้ระบบเดินต่อได้อย่างต่อเนื่อง"
+    text: "ดูแลหลังเปิดใช้งาน แก้ไข ปรับปรุง เพิ่มฟีเจอร์ และทำให้ระบบ|เดินต่อได้|อย่างต่อเนื่อง"
   }
 ];
 
@@ -62,27 +63,27 @@ const process = [
   {
     step: "01",
     title: "Consulting",
-    text: "วิเคราะห์ปัญหา เป้าหมาย ผู้ใช้ และ workflow เพื่อกำหนด solution ที่เหมาะกับธุรกิจ"
+    text: "วิเคราะห์ปัญหา เป้าหมาย ผู้ใช้ และ workflow เพื่อกำหนด solution ที่เหมาะ|กับธุรกิจ"
   },
   {
     step: "02",
     title: "Solution Design",
-    text: "วาง architecture, UX/UI, data flow และ scope ให้เห็นภาพระบบก่อนเริ่มพัฒนา"
+    text: "วาง architecture, UX/UI, data\u00a0flow และ scope ให้เห็นภาพระบบ|ก่อนเริ่มพัฒนา"
   },
   {
     step: "03",
     title: "Development",
-    text: "พัฒนาเป็น sprint พร้อม demo เป็นระยะ เพื่อให้ทีมตรวจสอบและปรับรายละเอียดได้เร็ว"
+    text: "พัฒนาเป็น sprint พร้อม demo เป็นระยะ เพื่อให้ทีมตรวจสอบ|และปรับรายละเอียด|ได้เร็ว"
   },
   {
     step: "04",
     title: "QA & UAT",
-    text: "ทดสอบการใช้งานจริง ตรวจ edge cases และแก้ปัญหาก่อนส่งขึ้น production"
+    text: "ทดสอบการใช้งานจริง ตรวจ edge\u00a0cases และแก้ปัญหา|ก่อนส่งขึ้น production"
   },
   {
     step: "05",
     title: "Launch & Support",
-    text: "deploy ระบบ ส่งมอบเอกสาร และดูแลปรับปรุงต่อหลังเริ่มใช้งาน"
+    text: "deploy ระบบ ส่งมอบเอกสาร และดูแลปรับปรุงต่อ|หลังเริ่มใช้งาน"
   }
 ];
 
@@ -114,9 +115,10 @@ export default function Home() {
           </h1>
           <p className="hero-tagline">Custom Software Development & Digital Product Delivery</p>
           <p className="hero-copy">
-            <strong>VOLCANAP SOFTWORK</strong> (โวลคานาป ซอฟต์เวิร์ค) คือ software house ที่ช่วยวิเคราะห์ ออกแบบ
-            และพัฒนาระบบเว็บสำหรับองค์กร ตั้งแต่ custom software, web application, dashboard,
-            system integration ไปจนถึง maintenance หลังเปิดใช้งาน
+            <strong>VOLCANAP SOFTWORK</strong>{" "}
+            <Phrases
+              text={"(โวลคานาป\u00a0ซอฟต์เวิร์ค) คือ software\u00a0house ที่ช่วยวิเคราะห์ ออกแบบ และพัฒนาระบบเว็บ|สำหรับองค์กร ตั้งแต่ custom\u00a0software, web\u00a0application, dashboard, system\u00a0integration ไปจนถึง maintenance หลังเปิดใช้งาน"}
+            />
           </p>
           <div className="hero-actions">
             <a className="primary-button" href="#contact">
@@ -131,7 +133,7 @@ export default function Home() {
             {highlights.map((item) => (
               <div className="hero-highlight" key={item.value}>
                 <strong>{item.value}</strong>
-                <span>{item.label}</span>
+                <span><Phrases text={item.label} /></span>
               </div>
             ))}
           </div>
@@ -149,7 +151,9 @@ export default function Home() {
             />
             <div>
               <span>Software House Delivery</span>
-              <strong>ทีมเดียวดูแลตั้งแต่โจทย์ธุรกิจจนถึงระบบใช้งานจริง</strong>
+              <strong>
+                <Phrases text="ทีมเดียวดูแลตั้งแต่|โจทย์ธุรกิจ|จนถึงระบบใช้งานจริง" />
+              </strong>
             </div>
           </div>
 
@@ -175,7 +179,7 @@ export default function Home() {
           </div>
 
           <p className="delivery-note">
-            เหมาะกับองค์กรที่ต้องการพาร์ทเนอร์พัฒนาระบบ ไม่ใช่แค่คนรับทำหน้าเว็บ
+            <Phrases text="เหมาะกับองค์กรที่ต้องการ|พาร์ทเนอร์พัฒนาระบบ ไม่ใช่แค่คนรับทำหน้าเว็บ" />
           </p>
 
           <div className="delivery-proof" aria-label="Delivery strengths">
@@ -202,10 +206,11 @@ export default function Home() {
           </div>
           <div className="identity-text">
             <p className="eyebrow">Software House Partner</p>
-            <h2>ออกแบบระบบจากเป้าหมายธุรกิจ ไม่ใช่แค่จากหน้าจอ</h2>
+            <h2>
+              <Phrases text="ออกแบบระบบจาก|เป้าหมายธุรกิจ ไม่ใช่แค่จากหน้าจอ" />
+            </h2>
             <p>
-              เราเริ่มจากการเข้าใจปัญหา กระบวนการทำงาน และเป้าหมายขององค์กร
-              ก่อนออกแบบระบบที่ทีมใช้งานได้จริง มีโครงสร้างชัดเจน และพร้อมต่อยอดเมื่อธุรกิจเติบโต
+              <Phrases text="เราเริ่มจากการเข้าใจปัญหา กระบวนการทำงาน และเป้าหมายขององค์กร ก่อนออกแบบระบบ|ที่ทีมใช้งานได้จริง มีโครงสร้างชัดเจน และพร้อมต่อยอด|เมื่อธุรกิจเติบโต" />
             </p>
           </div>
         </div>
@@ -218,7 +223,9 @@ export default function Home() {
           </div>
           <div>
             <strong>ร่วมงานกับหน่วยงานรัฐ</strong>
-            <span>มี reference จากหน่วยงานที่ต้องการความน่าเชื่อถือและการทำงานเป็นระบบ</span>
+            <span>
+              <Phrases text="มี reference จากหน่วยงาน|ที่ต้องการความน่าเชื่อถือ|และการทำงานเป็นระบบ" />
+            </span>
           </div>
         </div>
         <div className="trust-item">
@@ -227,7 +234,9 @@ export default function Home() {
           </div>
           <div>
             <strong>มองงานแบบระบบใช้งานจริง</strong>
-            <span>เน้น workflow ผู้ใช้ ความปลอดภัย และการส่งมอบที่ต่อยอดได้ในระยะยาว</span>
+            <span>
+              <Phrases text="เน้น workflow ผู้ใช้ ความปลอดภัย และการส่งมอบ|ที่ต่อยอดได้|ในระยะยาว" />
+            </span>
           </div>
         </div>
       </section>
@@ -235,10 +244,11 @@ export default function Home() {
       <section className="section-shell" id="services">
         <div className="section-heading">
           <p className="eyebrow">Software House Services</p>
-          <h2>บริการพัฒนาซอฟต์แวร์สำหรับองค์กร</h2>
+          <h2>
+            <Phrases text="บริการพัฒนาซอฟต์แวร์|สำหรับองค์กร" />
+          </h2>
           <p>
-            ครอบคลุมตั้งแต่ custom software, web application, dashboard, integration
-            ไปจนถึง maintenance และการปรับปรุงระบบหลังเปิดใช้งาน
+            <Phrases text={"ครอบคลุมตั้งแต่ custom\u00a0software, web\u00a0application, dashboard, integration ไปจนถึง maintenance และการปรับปรุงระบบ|หลังเปิดใช้งาน"} />
           </p>
         </div>
         <div className="service-grid">
@@ -250,7 +260,7 @@ export default function Home() {
                   <Icon size={22} />
                 </div>
                 <h3>{service.title}</h3>
-                <p>{service.text}</p>
+                <p><Phrases text={service.text} /></p>
               </article>
             );
           })}
@@ -263,8 +273,7 @@ export default function Home() {
             <p className="eyebrow">Selected Work</p>
             <h2>ตัวอย่างงาน</h2>
             <p className="case-copy">
-              ตัวอย่างระบบที่เราพัฒนา ตั้งแต่ระบบสำหรับหน่วยงานระดับชาติ ไปจนถึง dashboard,
-              portal และ automation ที่รองรับความปลอดภัยและการใช้งานจริง
+              <Phrases text={"ตัวอย่างระบบที่เราพัฒนา|และเปิดใช้งานจริง ตั้งแต่ระบบสำหรับ|หน่วยงานระดับชาติ ไปจนถึงสื่อการเรียนรู้แบบ WebAR\u00a0และ\u00a03D"} />
             </p>
           </div>
           <div className="work-grid">
@@ -295,7 +304,7 @@ export default function Home() {
                         </span>
                       ))}
                     </strong>
-                    <p>{work.description}</p>
+                    <p><Phrases text={work.description} /></p>
                     <div className="case-tags">
                       {work.tags.map((tag) => (
                         <span key={tag}>{tag}</span>
@@ -317,15 +326,19 @@ export default function Home() {
         <div className="section-shell">
           <div className="section-heading section-heading--compact">
             <p className="eyebrow">Delivery Model</p>
-            <h2>กระบวนการส่งมอบแบบ software house</h2>
-            <p>ทำงานเป็นรอบสั้น ๆ มี scope ชัด ตรวจงานได้เป็นระยะ และพร้อมส่งขึ้นใช้งานจริง</p>
+            <h2>
+              <Phrases text={"กระบวนการส่งมอบแบบ software\u00a0house"} />
+            </h2>
+            <p>
+              <Phrases text="ทำงานเป็นรอบสั้น ๆ มี scope ชัด ตรวจงานได้เป็นระยะ และพร้อมส่งขึ้นใช้งานจริง" />
+            </p>
           </div>
           <div className="process-steps">
             {process.map((item, index) => (
               <div className="process-step" key={item.step}>
                 <span className="process-number">{item.step}</span>
                 <strong>{item.title}</strong>
-                <p>{item.text}</p>
+                <p><Phrases text={item.text} /></p>
                 {index < process.length - 1 && <span className="process-connector" aria-hidden="true" />}
               </div>
             ))}
@@ -338,8 +351,7 @@ export default function Home() {
           <p className="eyebrow">Start a Project</p>
           <h2>ประเมิน scope เบื้องต้น</h2>
           <p>
-            เลือกประเภทงานที่ต้องการ ระบบจะคำนวณงบเริ่มต้นคร่าว ๆ เพื่อใช้คุย requirement ต่อได้เร็วขึ้น
-            ราคาจริงขึ้นกับขอบเขตงาน รายละเอียดการใช้งาน และระยะเวลาส่งมอบ
+            <Phrases text="เลือกประเภทงานที่ต้องการ ระบบจะคำนวณงบเริ่มต้นคร่าว ๆ เพื่อใช้คุย requirement ต่อได้เร็วขึ้น ราคาจริงขึ้นกับขอบเขตงาน รายละเอียดการใช้งาน และระยะเวลาส่งมอบ" />
           </p>
           <div className="contact-list">
             <a className="contact-item" href={`mailto:${COMPANY_EMAIL}`}>
