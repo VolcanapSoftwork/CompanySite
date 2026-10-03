@@ -43,7 +43,7 @@ export function SiteHeader({ navItems }: { navItems: NavItem[] }) {
   return (
     <div className="header-shell" ref={shellRef}>
       <header className="site-header">
-        <a className="brand" href="#top" aria-label="VOLCANAP SOFTWORK home">
+        <a className="brand" href="/#top" aria-label="VOLCANAP SOFTWORK home">
           <Image
             src="/volcanap-logo.png"
             alt="VOLCANAP SOFTWORK logo"
@@ -64,7 +64,7 @@ export function SiteHeader({ navItems }: { navItems: NavItem[] }) {
             </a>
           ))}
         </nav>
-        <a className="header-cta" href="#contact">
+        <a className="header-cta" href="/#contact">
           เริ่มโปรเจกต์
           <ArrowRight size={16} aria-hidden="true" />
         </a>
@@ -87,7 +87,7 @@ export function SiteHeader({ navItems }: { navItems: NavItem[] }) {
               {item.label}
             </a>
           ))}
-          <a className="mobile-nav-cta" href="#contact" onClick={() => setMenuOpen(false)}>
+          <a className="mobile-nav-cta" href="/#contact" onClick={() => setMenuOpen(false)}>
             เริ่มโปรเจกต์
             <ArrowRight size={16} aria-hidden="true" />
           </a>

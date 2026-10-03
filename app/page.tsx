@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import {
   BarChart3,
   CheckCircle2,
@@ -13,15 +14,10 @@ import {
   Sparkles
 } from "lucide-react";
 import { ScopeEstimator } from "./components/ScopeEstimator";
-import { COMPANY_EMAIL } from "./site";
+import { COMPANY_EMAIL, navItems } from "./site";
+import { SiteFooter } from "./components/SiteFooter";
 import { SiteHeader } from "./components/SiteHeader";
-
-const navItems = [
-  { href: "#services", label: "บริการ" },
-  { href: "#work", label: "ผลงาน" },
-  { href: "#process", label: "ขั้นตอน" },
-  { href: "#contact", label: "ติดต่อ" }
-];
+import { works } from "./works";
 
 const highlights = [
   { value: "Full-cycle", label: "Consulting, Design, Dev, Support" },
@@ -128,7 +124,7 @@ export default function Home() {
               <ChevronRight size={18} />
             </a>
             <a className="secondary-button" href="#work">
-              ดูผลงานหน่วยงานรัฐ
+              ดูตัวอย่างงาน
             </a>
           </div>
           <div className="hero-highlights">
@@ -264,37 +260,55 @@ export default function Home() {
       <section className="case-section" id="work">
         <div className="section-shell case-layout">
           <div className="case-intro">
-            <p className="eyebrow">Proven Experience</p>
-            <h2>ได้รับความไว้วางใจจากหน่วยงานระดับชาติ</h2>
+            <p className="eyebrow">Selected Work</p>
+            <h2>ตัวอย่างงาน</h2>
             <p className="case-copy">
-              ผลงานของเราสะท้อนถึงมาตรฐานระดับสูงและความเชี่ยวชาญ 
-              ในการพัฒนาระบบที่ต้องรองรับความปลอดภัย การใช้งานจริง และส่งผลกระทบในวงกว้าง
+              ตัวอย่างระบบที่เราพัฒนา ตั้งแต่ระบบสำหรับหน่วยงานระดับชาติ ไปจนถึง dashboard,
+              portal และ automation ที่รองรับความปลอดภัยและการใช้งานจริง
             </p>
-            <div className="case-tags">
-              <span>หน่วยงานรัฐ</span>
-              <span>Anti-Trafficking</span>
-              <span>Royal Thai Police</span>
-            </div>
           </div>
-          <div className="agency-card">
-            <div className="agency-logo-wrap">
-              <Image
-                src="/tatip-rtp.png"
-                alt="TATIP RTP logo"
-                width={2000}
-                height={2000}
-                sizes="(max-width: 680px) 120px, 160px"
-              />
-            </div>
-            <div className="agency-body">
-              <span className="agency-label">Government Agency</span>
-              <strong>
-                THE ANTI-TRAFFICKING IN PERSONS CENTER
-                <br />
-                ROYAL THAI POLICE
-              </strong>
-              <p>TATIP RTP — ศูนย์ปราบปรามการค้ามนุษย์ สำนักงานตำรวจแห่งชาติ</p>
-            </div>
+          <div className="work-grid">
+            {works.map((work) => {
+              const Icon = work.icon;
+              return (
+                <article className="agency-card" key={work.name.join(" ")}>
+                  <div className="agency-logo-wrap">
+                    {work.logo ? (
+                      <Image
+                        src={work.logo}
+                        alt={work.logoAlt ?? ""}
+                        width={2000}
+                        height={2000}
+                        sizes="(max-width: 680px) 120px, 160px"
+                      />
+                    ) : (
+                      Icon && <Icon className="agency-icon" size={56} aria-hidden="true" />
+                    )}
+                  </div>
+                  <div className="agency-body">
+                    <span className="agency-label">{work.label}</span>
+                    <strong>
+                      {work.name.map((line, index) => (
+                        <span key={line}>
+                          {index > 0 && <br />}
+                          {line}
+                        </span>
+                      ))}
+                    </strong>
+                    <p>{work.description}</p>
+                    <div className="case-tags">
+                      {work.tags.map((tag) => (
+                        <span key={tag}>{tag}</span>
+                      ))}
+                    </div>
+                    <Link className="work-link" href={`/work/${work.slug}`}>
+                      ดูรายละเอียด
+                      <ChevronRight size={16} aria-hidden="true" />
+                    </Link>
+                  </div>
+                </article>
+              );
+            })}
           </div>
         </div>
       </section>
@@ -345,25 +359,7 @@ export default function Home() {
         <ScopeEstimator />
       </section>
 
-      <footer className="site-footer">
-        <div className="footer-brand">
-          <Image src="/volcanap-logo.png" alt="" width={40} height={40} sizes="40px" />
-          <div>
-            <strong>VOLCANAP SOFTWORK</strong>
-            <span>Software House · Bangkok</span>
-          </div>
-        </div>
-        <nav className="footer-nav" aria-label="Footer navigation">
-          {navItems.map((item) => (
-            <a key={item.href} href={item.href}>
-              {item.label}
-            </a>
-          ))}
-        </nav>
-        <p className="footer-tagline">
-          Web systems, dashboards, secure workflows &amp; AI-enabled products.
-        </p>
-      </footer>
+      <SiteFooter />
     </main>
   );
 }
