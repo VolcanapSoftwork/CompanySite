@@ -1,6 +1,6 @@
 "use client";
 
-import { CheckCircle2, Mail, PencilLine, Plus, X } from "lucide-react";
+import { Check, CheckCircle2, Copy, Mail, PencilLine, Plus, X } from "lucide-react";
 import { useMemo, useState } from "react";
 import { COMPANY_EMAIL, COMPANY_NAME } from "../site";
 import { Phrases, plainText } from "./Phrases";
@@ -81,6 +81,8 @@ const MAX_RELAXED_DISCOUNT = 0.1;
 
 // Max length of the free-text scope; keeps the mailto URL short
 const OTHER_MAX = 200;
+// Keep generated mailto links under the ~2,000-char limit of common mail clients
+const MAILTO_MAX = 1800;
 
 // Yearly maintenance (MA) after handover, as a share of the build estimate
 const MA_RATE = 0.15;
@@ -128,45 +130,76 @@ export function ScopeEstimator() {
   const maPerYear = Math.round((estimate * MA_RATE) / 1000) * 1000;
   const maPerMonth = Math.round(maPerYear / 12 / 100) * 100;
 
-  // Opens the visitor's own mail client with a draft addressed to us, so the
-  // reply-to is their real address and no form backend is needed. Kept short
-  // on purpose: encoded Thai costs 9 chars each and Windows truncates a
-  // mailto URL past roughly 2,000.
-  const mailtoHref = useMemo(() => {
-    const timelineLabel = timelineOptions[timelineIndex].label;
-    const subject = `ขอประเมิน Scope: ${[...chosen.map((option) => plainText(option.label)), ...(other ? ["อื่นๆ"] : [])].join(", ")}`;
-    const body = [
-      `เรียน ทีม ${COMPANY_NAME}`,
-      "",
-      "■ ขอบเขตงานที่สนใจ",
-      ...chosen.map((option) => `- ${plainText(option.label)}`),
-      ...(other ? [`- อื่นๆ: ${other}`] : []),
-      "",
-      "■ ขนาดโปรเจกต์",
-      `${scale.label} — ${plainText(scale.hint)}`,
-      "",
-      "■ ระยะเวลา",
-      timelineLabel,
-      "",
-      "■ งบเริ่มต้นโดยประมาณ",
-      chosen.length ? formatBaht(estimate) + (other ? " (ไม่รวมงานอื่นๆ)" : "") : "รอประเมินหลังคุย requirement",
-      "",
-      "■ ค่าดูแลระบบ (MA) โดยประมาณ",
-      chosen.length ? `${formatBaht(maPerYear)}/ปี` : "รอประเมิน",
-      "",
-      "■ ผู้ติดต่อ",
-      "ชื่อ: ",
-      "บริษัท: ",
-      "โทร: ",
-      "",
-      "■ รายละเอียดเพิ่มเติม",
-      "",
-      "",
-      "ขอบคุณครับ/ค่ะ"
-    ].join("\r\n");
+  const timelineLabel = timelineOptions[timelineIndex].label;
+  const typeLabels = useMemo(() => chosen.map((option) => plainText(option.label)), [chosen]);
+  const budgetLine = chosen.length
+    ? `งบเริ่มต้น: ${formatBaht(estimate)}${other ? " (ไม่รวมงานอื่นๆ)" : ""} · MA: ${formatBaht(maPerYear)}/ปี`
+    : "งบเริ่มต้น: รอประเมินหลังคุย requirement";
 
-    return `mailto:${COMPANY_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-  }, [chosen, estimate, maPerYear, other, scale, timelineIndex]);
+  // Full summary for the "copy" button; no length limit
+  const fullText = [
+    `เรียน ทีม ${COMPANY_NAME}`,
+    "",
+    `ประเภทงาน: ${typeLabels.join(", ") || "-"}`,
+    ...(other ? [`งานอื่นๆ: ${other}`] : []),
+    `ขนาดโปรเจกต์: ${scale.label} (${plainText(scale.hint)})`,
+    `ระยะเวลา: ${timelineLabel}`,
+    budgetLine,
+    "",
+    "ชื่อ:",
+    "บริษัท:",
+    "โทร:"
+  ].join("\n");
+
+  // Opens the visitor's own mail client with a draft addressed to us, so the
+  // reply-to is their real address and no form backend is needed. Encoded Thai
+  // costs 9 chars each and many browsers/mail apps drop a mailto URL past
+  // roughly 2,000, so the draft is compact and trimmed to MAILTO_MAX.
+  const mailtoHref = useMemo(() => {
+    const build = (types: string[], extra: string) => {
+      const body = [
+        `สนใจ: ${types.join(", ") || "-"}`,
+        ...(extra ? [`อื่นๆ: ${extra}`] : []),
+        `ขนาด: ${scale.label} · ${timelineLabel}`,
+        budgetLine,
+        "",
+        "ชื่อ:",
+        "บริษัท:",
+        "โทร:"
+      ].join("\r\n");
+      return `mailto:${COMPANY_EMAIL}?subject=${encodeURIComponent("ขอประเมิน Scope")}&body=${encodeURIComponent(body)}`;
+    };
+
+    let types = typeLabels;
+    let extra = other;
+    let href = build(types, extra);
+    // The visitor's own words matter most: collapse the type list first
+    // (down to 3 names), then trim the free text, then collapse further
+    const collapse = (min: number) => {
+      for (let keep = types.length - 1; href.length > MAILTO_MAX && keep >= min; keep--) {
+        types = [...typeLabels.slice(0, keep), `และอีก ${typeLabels.length - keep} รายการ`];
+        href = build(types, extra);
+      }
+    };
+    collapse(3);
+    while (href.length > MAILTO_MAX && extra.length > 20) {
+      extra = extra.slice(0, Math.floor(extra.length * 0.8)).trimEnd() + "…";
+      href = build(types, extra);
+    }
+    collapse(1);
+    return href;
+  }, [budgetLine, other, scale, timelineLabel, typeLabels]);
+
+  const [copied, setCopied] = useState(false);
+  async function copySummary() {
+    try {
+      await navigator.clipboard.writeText(fullText);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2500);
+    } catch {
+      setCopied(false);
+    }
+  }
 
   function toggleOption(id: string) {
     setSelected((current) =>
@@ -333,13 +366,19 @@ export function ScopeEstimator() {
           <Mail size={18} aria-hidden="true" />
         </button>
       )}
+      {hasScope && (
+        <button className="secondary-button full-width" type="button" onClick={copySummary}>
+          {copied ? <Check size={16} aria-hidden="true" /> : <Copy size={16} aria-hidden="true" />}
+          {copied ? "คัดลอกแล้ว" : "คัดลอกรายละเอียด"}
+        </button>
+      )}
       {submitted && (
         <p className="success-message">
           <CheckCircle2 size={18} aria-hidden="true" />
           <span>
             เปิดโปรแกรมอีเมลพร้อมร่างข้อความแล้ว กรุณากรอกข้อมูลผู้ติดต่อแล้วกดส่งถึง{" "}
-            <strong>{COMPANY_EMAIL}</strong> หากโปรแกรมอีเมลไม่เปิดขึ้นมา
-            สามารถส่งรายละเอียดมาที่อีเมลนี้ได้โดยตรง
+            <strong>{COMPANY_EMAIL}</strong> ถ้าโปรแกรมอีเมลไม่เปิดขึ้นมา กด “คัดลอกรายละเอียด”
+            แล้ววางในอีเมลถึงที่อยู่นี้ได้เลย
           </span>
         </p>
       )}
