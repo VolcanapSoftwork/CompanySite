@@ -190,6 +190,30 @@ export function ScopeEstimator() {
     return href;
   }, [budgetLine, other, scale, timelineLabel, typeLabels]);
 
+  // Same draft for webmail, for visitors without a desktop mail app
+  const webmail = useMemo(() => {
+    const q = new URLSearchParams(mailtoHref.split("?")[1]);
+    const su = q.get("subject") ?? "";
+    const body = q.get("body") ?? "";
+    const to = encodeURIComponent(COMPANY_EMAIL);
+    return {
+      gmail: `https://mail.google.com/mail/?view=cm&fs=1&to=${to}&su=${encodeURIComponent(su)}&body=${encodeURIComponent(body)}`,
+      outlook: `https://outlook.live.com/mail/0/deeplink/compose?to=${to}&subject=${encodeURIComponent(su)}&body=${encodeURIComponent(body)}`
+    };
+  }, [mailtoHref]);
+
+  // Some embedded/preview browsers ignore a plain mailto click, so also hand
+  // the link to the top window explicitly
+  function openMailApp(event: React.MouseEvent<HTMLAnchorElement>) {
+    event.preventDefault();
+    setSubmitted(true);
+    try {
+      (window.top ?? window).location.href = mailtoHref;
+    } catch {
+      window.location.href = mailtoHref;
+    }
+  }
+
   const [copied, setCopied] = useState(false);
   async function copySummary() {
     try {
@@ -355,7 +379,8 @@ export function ScopeEstimator() {
         <a
           className="primary-button full-width"
           href={mailtoHref}
-          onClick={() => setSubmitted(true)}
+          target="_top"
+          onClick={openMailApp}
         >
           ร่างอีเมลส่ง scope
           <Mail size={18} aria-hidden="true" />
@@ -365,6 +390,18 @@ export function ScopeEstimator() {
           ร่างอีเมลส่ง scope
           <Mail size={18} aria-hidden="true" />
         </button>
+      )}
+      {hasScope && (
+        <p className="mail-alt">
+          ไม่มีแอปเมลในเครื่อง? เปิดด้วย{" "}
+          <a href={webmail.gmail} target="_blank" rel="noopener noreferrer" onClick={() => setSubmitted(true)}>
+            Gmail
+          </a>{" "}
+          หรือ{" "}
+          <a href={webmail.outlook} target="_blank" rel="noopener noreferrer" onClick={() => setSubmitted(true)}>
+            Outlook
+          </a>
+        </p>
       )}
       {hasScope && (
         <button className="secondary-button full-width" type="button" onClick={copySummary}>
