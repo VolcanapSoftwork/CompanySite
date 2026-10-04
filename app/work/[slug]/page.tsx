@@ -65,12 +65,18 @@ export default async function WorkDetailPage({ params }: Props) {
                   <span key={tag}>{tag}</span>
                 ))}
               </div>
-              {work.url && (
-                <a className="primary-button work-live" href={work.url} target="_blank" rel="noopener noreferrer">
-                  เยี่ยมชมระบบจริง
-                  <ExternalLink size={16} aria-hidden="true" />
-                </a>
-              )}
+              {work.url &&
+                (work.mockup ? (
+                  <Link className="primary-button work-live" href={work.url}>
+                    เปิดดู Mockup
+                    <ArrowRight size={16} aria-hidden="true" />
+                  </Link>
+                ) : (
+                  <a className="primary-button work-live" href={work.url} target="_blank" rel="noopener noreferrer">
+                    เยี่ยมชมระบบจริง
+                    <ExternalLink size={16} aria-hidden="true" />
+                  </a>
+                ))}
             </div>
             <div className="work-hero-visual">
               {work.screenshot ? (
@@ -114,7 +120,12 @@ export default async function WorkDetailPage({ params }: Props) {
         <section className="section-shell work-block" id="screens">
           <div className="section-heading section-heading--compact">
             <p className="eyebrow">Screens</p>
-            <h2>ภาพตัวอย่างระบบจริง</h2>
+            <h2>{work.mockup ? "ภาพตัวอย่างหน้าจอ" : "ภาพตัวอย่างระบบจริง"}</h2>
+            {work.galleryNote && (
+              <p>
+                <Phrases text={work.galleryNote} />
+              </p>
+            )}
           </div>
           <WorkGallery images={work.gallery} />
         </section>

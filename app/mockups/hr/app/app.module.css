@@ -1,0 +1,354 @@
+/* Employee check-in app mockup: a phone on desktop, full screen on phones */
+.page {
+  --accent: #0f7f71;
+  --line: #e3e8ef;
+  --muted: #677489;
+  min-height: 100vh;
+  background: linear-gradient(160deg, #e6f3f1 0%, #f4f6f9 60%);
+  color: #1b2430;
+  font-family: var(--font-body);
+  font-size: 14px;
+}
+
+.banner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px 16px;
+  padding: 8px 20px;
+  background: #1b2430;
+  color: rgba(255, 255, 255, 0.72);
+  font-size: 12.5px;
+}
+
+.banner a {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #fff;
+  font-weight: 600;
+}
+
+.stage {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 64px;
+  padding: 40px 20px 56px;
+}
+
+.copy {
+  max-width: 380px;
+}
+
+.eyebrow {
+  margin: 0 0 8px;
+  color: var(--accent);
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.copy h1 {
+  margin: 0 0 16px;
+  font-size: 28px;
+  line-height: 1.25;
+}
+
+.copy ul {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+  padding-left: 18px;
+  color: var(--muted);
+  line-height: 1.55;
+}
+
+.phone {
+  position: relative;
+  width: 360px;
+  padding: 12px;
+  border-radius: 44px;
+  background: #1b2430;
+  box-shadow: 0 30px 70px rgba(27, 36, 48, 0.25);
+}
+
+.notch {
+  position: absolute;
+  top: 18px;
+  left: 50%;
+  z-index: 1;
+  width: 96px;
+  height: 22px;
+  border-radius: 999px;
+  background: #1b2430;
+  transform: translateX(-50%);
+}
+
+.screen {
+  position: relative;
+  display: grid;
+  gap: 12px;
+  height: 740px;
+  padding: 46px 14px 76px;
+  border-radius: 34px;
+  background: #f4f6f9;
+  overflow: hidden;
+  align-content: start;
+}
+
+.top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.top small,
+.top strong {
+  display: block;
+}
+
+.top small {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.top strong {
+  font-size: 17px;
+}
+
+.bell {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: #fff;
+  color: var(--muted);
+}
+
+.clockCard {
+  display: grid;
+  justify-items: center;
+  gap: 6px;
+  padding: 18px 16px 14px;
+  border-radius: 20px;
+  background: linear-gradient(150deg, #0f7f71, #0b5f55);
+  color: #fff;
+  text-align: center;
+}
+
+.clockCard small {
+  opacity: 0.8;
+  font-size: 12.5px;
+}
+
+.clockCard > b {
+  font-family: var(--font-display);
+  font-size: 44px;
+  line-height: 1.05;
+}
+
+.location {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.16);
+  font-size: 12px;
+}
+
+.checkBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  margin-top: 6px;
+  padding: 12px;
+  border: 0;
+  border-radius: 14px;
+  background: #fff;
+  color: var(--accent);
+  font: 700 15px/1 var(--font-body);
+}
+
+.shift {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  width: 100%;
+  margin-top: 4px;
+  font-size: 11.5px;
+  opacity: 0.9;
+}
+
+.shift b {
+  display: block;
+  font-size: 13px;
+}
+
+.quick {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+  text-align: center;
+  font-size: 11.5px;
+  color: var(--muted);
+}
+
+.quick span {
+  display: grid;
+  justify-items: center;
+  gap: 5px;
+}
+
+.quick i {
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  border-radius: 14px;
+  background: #fff;
+  color: var(--accent);
+}
+
+.card {
+  padding: 12px 14px;
+  border-radius: 16px;
+  background: #fff;
+}
+
+.cardHead {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  font-size: 13.5px;
+}
+
+.cardHead small {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.leave {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  text-align: center;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.leave b {
+  display: block;
+  color: #1b2430;
+  font-family: var(--font-display);
+  font-size: 20px;
+}
+
+.history {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 12.5px;
+}
+
+.history li {
+  display: grid;
+  grid-template-columns: 78px 1fr auto;
+  align-items: center;
+}
+
+.history em {
+  padding: 1px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-style: normal;
+  font-weight: 600;
+}
+
+.st_ok {
+  background: #e6f4ec;
+  color: #1f8a5b;
+}
+
+.st_late {
+  background: #fdf1dc;
+  color: #a86200;
+}
+
+.st_leave {
+  background: #eef1f5;
+  color: var(--muted);
+}
+
+.tabbar {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  padding: 8px 6px 14px;
+  border-top: 1px solid var(--line);
+  background: #fff;
+  color: var(--muted);
+  font-size: 11px;
+  text-align: center;
+}
+
+.tabbar span {
+  display: grid;
+  justify-items: center;
+  gap: 3px;
+}
+
+.tabActive {
+  color: var(--accent);
+  font-weight: 700;
+}
+
+@media (max-width: 860px) {
+  .stage {
+    flex-direction: column;
+    gap: 28px;
+    padding-top: 24px;
+  }
+
+  .copy {
+    max-width: 360px;
+  }
+}
+
+/* On a real phone, drop the bezel and show the app itself */
+@media (max-width: 480px) {
+  .stage {
+    padding: 20px 0 0;
+  }
+
+  .copy {
+    padding: 0 16px;
+  }
+
+  .phone {
+    width: 100%;
+    padding: 0;
+    border-radius: 0;
+    background: none;
+    box-shadow: none;
+  }
+
+  .notch {
+    display: none;
+  }
+
+  .screen {
+    height: auto;
+    padding-top: 16px;
+    padding-bottom: 86px;
+    border-radius: 0;
+  }
+}
