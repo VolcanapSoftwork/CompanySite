@@ -1,29 +1,29 @@
+import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import {
+  ArrowRight,
   BarChart3,
-  CheckCircle2,
-  ChevronRight,
-  FileCheck2,
+  Check,
   Globe2,
   Layers3,
-  Mail,
-  MapPin,
   Rocket,
   ShieldCheck,
   Sparkles
 } from "lucide-react";
-import { ScopeEstimator } from "./components/ScopeEstimator";
-import { COMPANY_EMAIL, navItems } from "./site";
+import { QuoteSection } from "./components/QuoteSection";
+import { COMPANY_EMAIL, COMPANY_NAME, SITE_DESCRIPTION, SITE_URL, navItems } from "./site";
+import { JsonLd } from "./components/JsonLd";
+import { SHOW_PRICING } from "./pricing";
 import { Phrases } from "./components/Phrases";
 import { SiteFooter } from "./components/SiteFooter";
 import { SiteHeader } from "./components/SiteHeader";
 import { works } from "./works";
 
-const highlights = [
-  { value: "Full-cycle", label: "Consulting, Design, Dev, Support" },
-  { value: "Custom Software", label: "ทำระบบตาม workflow ธุรกิจ" },
-  { value: "Gov-ready", label: "มี reference หน่วยงานรัฐ" }
+const heroFacts = [
+  ...(SHOW_PRICING ? ["ราคาเริ่มต้นเปิดเผย"] : []),
+  "ทีมเดียวตั้งแต่ออกแบบถึงดูแล",
+  "มีผลงานกับหน่วยงานรัฐ"
 ];
 
 const services = [
@@ -35,7 +35,7 @@ const services = [
   {
     icon: Layers3,
     title: "Web Application & Portal",
-    text: "สร้างเว็บแอป, customer\u00a0portal, admin\u00a0portal และระบบสมาชิก|ที่ใช้งานง่าย รองรับการขยาย|ในอนาคต"
+    text: "สร้างเว็บแอป, customer portal, admin portal และระบบสมาชิก|ที่ใช้งานง่าย รองรับการขยาย|ในอนาคต"
   },
   {
     icon: BarChart3,
@@ -61,315 +61,287 @@ const services = [
 
 const process = [
   {
-    step: "01",
     title: "Consulting",
     text: "วิเคราะห์ปัญหา เป้าหมาย ผู้ใช้ และ workflow เพื่อกำหนด solution ที่เหมาะ|กับธุรกิจ"
   },
   {
-    step: "02",
     title: "Solution Design",
-    text: "วาง architecture, UX/UI, data\u00a0flow และ scope ให้เห็นภาพระบบ|ก่อนเริ่มพัฒนา"
+    text: "วาง architecture, UX/UI, data flow และ scope ให้เห็นภาพระบบ|ก่อนเริ่มพัฒนา"
   },
   {
-    step: "03",
     title: "Development",
     text: "พัฒนาเป็น sprint พร้อม demo เป็นระยะ เพื่อให้ทีมตรวจสอบ|และปรับรายละเอียด|ได้เร็ว"
   },
   {
-    step: "04",
     title: "QA & UAT",
-    text: "ทดสอบการใช้งานจริง ตรวจ edge\u00a0cases และแก้ปัญหา|ก่อนส่งขึ้น production"
+    text: "ทดสอบการใช้งานจริง ตรวจ edge cases และแก้ปัญหา|ก่อนส่งขึ้น production"
   },
   {
-    step: "05",
     title: "Launch & Support",
     text: "deploy ระบบ ส่งมอบเอกสาร และดูแลปรับปรุงต่อ|หลังเริ่มใช้งาน"
   }
 ];
 
-const deliveryRoles = ["Business Analyst", "UX/UI Designer", "Full-stack Developer", "QA & Deployment"];
+// Shipped systems, shown as a quiet reference row under the hero
+const liveWorks = works.filter((work) => !work.mockup);
 
-const deliveryStages = [
-  { step: "01", title: "Consult", text: "Requirement, workflow, scope" },
-  { step: "02", title: "Design", text: "UX/UI, data flow, architecture" },
-  { step: "03", title: "Build", text: "Sprint delivery, review, QA" },
-  { step: "04", title: "Launch", text: "Deploy, handover, support" }
-];
+// The government work is shown by its system, not the agency: the homepage keeps
+// that reference low-key, and the full names live on the detail page
+const shortNames: Record<string, string> = {
+  "tatip-hint-reporting": "ระบบแจ้งเบาะแสคดีค้ามนุษย์"
+};
+const shortDescriptions: Record<string, string> = {
+  "tatip-hint-reporting": "เว็บไซต์ให้ประชาชนแจ้งเบาะแส|แบบปกปิดตัวตนได้ พร้อมระบบหลังบ้าน|ให้เจ้าหน้าที่คัดกรองและติดตามคดี"
+};
+const thumbOverride: Record<string, string> = {
+  "tatip-hint-reporting": "/works/tatip/desktop-reporting.webp"
+};
+
+function workThumb(work: (typeof works)[number]) {
+  const override = work.gallery?.find((image) => image.src === thumbOverride[work.slug]);
+  if (override) return { ...override, phone: false };
+  const desktop = work.gallery?.find((image) => image.device === "desktop");
+  if (desktop) return { ...desktop, phone: false };
+  const mobile = work.gallery?.find((image) => image.device === "mobile");
+  if (mobile) return { ...mobile, phone: true };
+  return work.screenshot ? { ...work.screenshot, phone: false } : null;
+}
+
+export const metadata: Metadata = {
+  alternates: { canonical: "/" },
+  openGraph: { url: "/" }
+};
+
+const organizationLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "ProfessionalService",
+      "@id": `${SITE_URL}/#organization`,
+      name: COMPANY_NAME,
+      alternateName: "โวลคานาป ซอฟต์เวิร์ค",
+      url: SITE_URL,
+      logo: `${SITE_URL}/volcanap-vcn.png`,
+      image: `${SITE_URL}/volcanap-vcn.png`,
+      email: COMPANY_EMAIL,
+      description: SITE_DESCRIPTION,
+      address: { "@type": "PostalAddress", addressCountry: "TH" },
+      areaServed: { "@type": "Country", name: "Thailand" },
+      knowsLanguage: ["th", "en"],
+      makesOffer: services.map((service) => ({
+        "@type": "Offer",
+        itemOffered: { "@type": "Service", name: service.title, description: service.text.replace(/|/g, "") }
+      }))
+    },
+    {
+      "@type": "WebSite",
+      "@id": `${SITE_URL}/#website`,
+      url: SITE_URL,
+      name: COMPANY_NAME,
+      inLanguage: "th",
+      publisher: { "@id": `${SITE_URL}/#organization` }
+    }
+  ]
+};
 
 export default function Home() {
   return (
     <main>
-      <div className="page-glow" aria-hidden="true" />
-
+      <JsonLd data={organizationLd} />
       <SiteHeader navItems={navItems} />
 
-      <section className="landing-hero section-shell" id="top">
-        <div className="landing-hero-content">
-          <p className="eyebrow">
-            <span className="eyebrow-dot" aria-hidden="true" />
-            Software House · Bangkok
-          </p>
-          <h1 className="hero-brand-name" aria-label="VOLCANAP SOFTWORK">
-            <span>VOLCANAP</span>
-            <span className="text-gradient">SOFTWORK</span>
+      <section className="hero shell" id="top">
+        <div className="hero-copy">
+          <h1>
+            <Phrases text="ออกแบบ|และพัฒนา|ระบบงาน ตามโจทย์|ธุรกิจของคุณ" />
           </h1>
-          <p className="hero-tagline">Custom Software Development & Digital Product Delivery</p>
-          <p className="hero-copy">
+          <p className="hero-lead">
             <strong>VOLCANAP SOFTWORK</strong>{" "}
             <Phrases
-              text={"(โวลคานาป\u00a0ซอฟต์เวิร์ค) คือ software\u00a0house ที่ช่วยวิเคราะห์ ออกแบบ และพัฒนาระบบเว็บ|สำหรับองค์กร ตั้งแต่ custom\u00a0software, web\u00a0application, dashboard, system\u00a0integration ไปจนถึง maintenance หลังเปิดใช้งาน"}
+              text={"คือ software house ที่วิเคราะห์ ออกแบบ และพัฒนาระบบเว็บ|สำหรับองค์กร ตั้งแต่ custom software, web application, dashboard ไปจนถึงดูแลระบบ|หลังเปิดใช้งาน"}
             />
           </p>
           <div className="hero-actions">
-            <a className="primary-button" href="#contact">
-              ขอประเมินงานฟรี
-              <ChevronRight size={18} />
+            <a className="button button--primary button--lg" href={SHOW_PRICING ? "#pricing" : "#contact"}>
+              {SHOW_PRICING ? "ดูราคาเริ่มต้น" : "ขอใบเสนอราคา"}
+              <ArrowRight size={18} aria-hidden="true" />
             </a>
-            <a className="secondary-button" href="#work">
-              ดูตัวอย่างงาน
+            <a className="button button--secondary button--lg" href="#work">
+              ดูผลงาน
             </a>
           </div>
-          <div className="hero-highlights">
-            {highlights.map((item) => (
-              <div className="hero-highlight" key={item.value}>
-                <strong>{item.value}</strong>
-                <span><Phrases text={item.label} /></span>
-              </div>
+          <ul className="hero-facts">
+            {heroFacts.map((fact) => (
+              <li key={fact}>
+                <Check size={16} aria-hidden="true" />
+                <Phrases text={fact} />
+              </li>
             ))}
-          </div>
+          </ul>
         </div>
 
-        <div className="delivery-map" aria-label="VOLCANAP SOFTWORK delivery model">
-          <div className="delivery-map-core">
+        <figure className="hero-visual">
+          <div className="browser-frame">
+            <div className="browser-bar" aria-hidden="true">
+              <span />
+              <span />
+              <span />
+            </div>
+            <div className="browser-crop">
             <Image
-              src="/volcanap-logo.png"
-              alt="VOLCANAP SOFTWORK logo"
-              width={72}
-              height={72}
-              sizes="72px"
-              className="delivery-map-logo"
+              src="/works/mockups/his-overview-desktop.webp"
+              alt="หน้าภาพรวมระบบบริหารโรงพยาบาล ตัวอย่างหน้าจอที่ทีมออกแบบ"
+              width={2160}
+              height={1350}
+              sizes="(max-width: 980px) 150vw, 960px"
+              quality={85}
+              priority
             />
-            <div>
-              <span>Software House Delivery</span>
-              <strong>
-                <Phrases text="ทีมเดียวดูแลตั้งแต่|โจทย์ธุรกิจ|จนถึงระบบใช้งานจริง" />
-              </strong>
             </div>
           </div>
-
-          <div className="delivery-path" aria-label="Delivery stages">
-            {deliveryStages.map((stage) => (
-              <div className="delivery-stage" key={stage.step}>
-                <span className="delivery-stage-number">{stage.step}</span>
-                <div className="delivery-stage-body">
-                  <strong>{stage.title}</strong>
-                  <p>{stage.text}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          <div className="delivery-lanes" aria-label="Delivery roles">
-            {deliveryRoles.map((role) => (
-              <div className="delivery-lane" key={role}>
-                <CheckCircle2 size={18} />
-                <span>{role}</span>
-              </div>
-            ))}
-          </div>
-
-          <p className="delivery-note">
-            <Phrases text="เหมาะกับองค์กรที่ต้องการ|พาร์ทเนอร์พัฒนาระบบ ไม่ใช่แค่คนรับทำหน้าเว็บ" />
-          </p>
-
-          <div className="delivery-proof" aria-label="Delivery strengths">
-            <span>Business-first</span>
-            <span>Production-ready</span>
-            <span>Supportable</span>
-          </div>
-        </div>
-      </section>
-
-      <section className="identity-section section-shell" id="identity">
-        <div className="identity-content">
-          <div className="identity-visual">
-            <div className="identity-circle"></div>
-            <div className="identity-circle identity-circle--inner"></div>
+          <div className="phone-frame">
             <Image
-              src="/volcanap-logo.png"
-              alt="Volcanap Core"
-              width={100}
-              height={100}
-              sizes="100px"
-              className="identity-logo"
+              src="/works/mockups/hr-app-mobile.webp"
+              alt="แอปพนักงานสำหรับเช็คอินเข้างาน ตัวอย่างหน้าจอมือถือ"
+              width={674}
+              height={1480}
+              sizes="(max-width: 680px) 32vw, 190px"
+              quality={85}
+              priority
             />
           </div>
-          <div className="identity-text">
-            <p className="eyebrow">Software House Partner</p>
-            <h2>
-              <Phrases text="ออกแบบระบบจาก|เป้าหมายธุรกิจ ไม่ใช่แค่จากหน้าจอ" />
-            </h2>
-            <p>
-              <Phrases text="เราเริ่มจากการเข้าใจปัญหา กระบวนการทำงาน และเป้าหมายขององค์กร ก่อนออกแบบระบบ|ที่ทีมใช้งานได้จริง มีโครงสร้างชัดเจน และพร้อมต่อยอด|เมื่อธุรกิจเติบโต" />
-            </p>
-          </div>
-        </div>
+          <figcaption>ตัวอย่างหน้าจอระบบโรงพยาบาลและแอป HR (Mockup)</figcaption>
+        </figure>
       </section>
 
-      <section className="trust-band">
-        <div className="trust-item">
-          <div className="trust-icon">
-            <ShieldCheck size={22} />
-          </div>
-          <div>
-            <strong>ร่วมงานกับหน่วยงานรัฐ</strong>
-            <span>
-              <Phrases text="มี reference จากหน่วยงาน|ที่ต้องการความน่าเชื่อถือ|และการทำงานเป็นระบบ" />
-            </span>
-          </div>
-        </div>
-        <div className="trust-item">
-          <div className="trust-icon trust-icon--green">
-            <Layers3 size={22} />
-          </div>
-          <div>
-            <strong>มองงานแบบระบบใช้งานจริง</strong>
-            <span>
-              <Phrases text="เน้น workflow ผู้ใช้ ความปลอดภัย และการส่งมอบ|ที่ต่อยอดได้|ในระยะยาว" />
-            </span>
-          </div>
-        </div>
+      <section className="proof shell" aria-labelledby="proof-title">
+        <h2 id="proof-title" className="proof-title">
+          ระบบที่เปิดใช้งานจริง
+        </h2>
+        <ul className="proof-list">
+          {liveWorks.map((work) => {
+            const Icon = work.icon;
+            return (
+              <li key={work.slug}>
+                <Link href={`/work/${work.slug}`} className="proof-item">
+                  <span className="proof-mark" aria-hidden="true">
+                    {work.logo ? (
+                      <Image src={work.logo} alt="" width={2000} height={2000} sizes="40px" />
+                    ) : (
+                      Icon && <Icon size={22} />
+                    )}
+                  </span>
+                  <span className="proof-text">
+                    <strong>{shortNames[work.slug] ?? work.name.join(" ")}</strong>
+                    <span>{work.label}</span>
+                  </span>
+                </Link>
+              </li>
+            );
+          })}
+        </ul>
       </section>
 
-      <section className="section-shell" id="services">
-        <div className="section-heading">
-          <p className="eyebrow">Software House Services</p>
+      <section className="section shell services" id="services">
+        <div className="section-head section-head--side">
           <h2>
             <Phrases text="บริการพัฒนาซอฟต์แวร์|สำหรับองค์กร" />
           </h2>
           <p>
-            <Phrases text={"ครอบคลุมตั้งแต่ custom\u00a0software, web\u00a0application, dashboard, integration ไปจนถึง maintenance และการปรับปรุงระบบ|หลังเปิดใช้งาน"} />
+            <Phrases text={"ครอบคลุมตั้งแต่ custom software, web application, dashboard, integration ไปจนถึง maintenance และการปรับปรุงระบบ|หลังเปิดใช้งาน"} />
           </p>
+          <a className="text-link" href={SHOW_PRICING ? "#pricing" : "#contact"}>
+            {SHOW_PRICING ? "ดูราคาเริ่มต้นของแต่ละระบบ" : "ขอใบเสนอราคาสำหรับระบบของคุณ"}
+            <ArrowRight size={16} aria-hidden="true" />
+          </a>
         </div>
-        <div className="service-grid">
+        <ul className="service-list">
           {services.map((service) => {
             const Icon = service.icon;
             return (
-              <article className="service-card" key={service.title}>
-                <div className="icon-tile">
-                  <Icon size={22} />
-                </div>
+              <li className="service-item" key={service.title}>
+                <Icon className="service-icon" size={24} strokeWidth={1.75} aria-hidden="true" />
                 <h3>{service.title}</h3>
-                <p><Phrases text={service.text} /></p>
-              </article>
+                <p>
+                  <Phrases text={service.text} />
+                </p>
+              </li>
             );
           })}
-        </div>
+        </ul>
       </section>
 
-      <section className="case-section" id="work">
-        <div className="section-shell case-layout">
-          <div className="case-intro">
-            <p className="eyebrow">Selected Work</p>
-            <h2>ตัวอย่างงาน</h2>
-            <p className="case-copy">
-              <Phrases text={"ระบบที่เราพัฒนา|และเปิดใช้งานจริง ตั้งแต่ระบบสำหรับ|หน่วยงานระดับชาติ ไปจนถึงสื่อการเรียนรู้แบบ WebAR\u00a0และ\u00a03D พร้อมตัวอย่างหน้าจอ|ระบบองค์กรอย่าง ระบบโรงพยาบาล, HR และ\u00a0CRM"} />
+      <section className="section section--tint" id="work">
+        <div className="shell">
+          <div className="section-head">
+            <h2>ผลงานและตัวอย่างระบบ</h2>
+            <p>
+              <Phrases text={"ระบบที่เราพัฒนา|และเปิดใช้งานจริง ตั้งแต่ระบบสำหรับ|หน่วยงานระดับชาติ ไปจนถึงสื่อการเรียนรู้แบบ WebAR และ 3D พร้อมตัวอย่างหน้าจอ|ระบบองค์กรอย่าง ระบบโรงพยาบาล, HR และ CRM"} />
             </p>
           </div>
-          <div className="work-grid">
+          <ul className="work-grid">
             {works.map((work) => {
-              const Icon = work.icon;
+              const thumb = workThumb(work);
               return (
-                <article className="agency-card" key={work.name.join(" ")}>
-                  <div className="agency-logo-wrap">
-                    {work.logo ? (
-                      <Image
-                        src={work.logo}
-                        alt={work.logoAlt ?? ""}
-                        width={2000}
-                        height={2000}
-                        sizes="(max-width: 680px) 120px, 160px"
-                      />
-                    ) : (
-                      Icon && <Icon className="agency-icon" size={56} aria-hidden="true" />
-                    )}
-                  </div>
-                  <div className="agency-body">
-                    <span className="agency-label">{work.label}</span>
-                    <strong>
-                      {work.name.map((line, index) => (
-                        <span key={line}>
-                          {index > 0 && <br />}
-                          {line}
-                        </span>
-                      ))}
-                    </strong>
-                    <p><Phrases text={work.description} /></p>
-                    <div className="case-tags">
-                      {work.tags.map((tag) => (
-                        <span key={tag}>{tag}</span>
-                      ))}
-                    </div>
-                    <Link className="work-link" href={`/work/${work.slug}`}>
-                      ดูรายละเอียด
-                      <ChevronRight size={16} aria-hidden="true" />
-                    </Link>
-                  </div>
-                </article>
+                <li className="work-card" key={work.slug}>
+                  <Link href={`/work/${work.slug}`} className="work-card-link">
+                    <span className={`work-thumb${thumb?.phone ? " work-thumb--phone" : ""}${work.mockup ? " work-thumb--mockup" : ""}`}>
+                      {thumb && (
+                        <Image
+                          src={thumb.src}
+                          alt=""
+                          width={thumb.width}
+                          height={thumb.height}
+                          // the thumbnail is zoomed to 135% of the card, so ask for that width
+                          sizes={thumb.phone ? "200px" : "(max-width: 680px) 125vw, (max-width: 980px) 62vw, 520px"}
+                          quality={85}
+                        />
+                      )}
+                    </span>
+                    <span className="work-meta">
+                      <span className="work-name">{shortNames[work.slug] ?? work.name.join(" ")}</span>
+                      <span className={`work-kind${work.mockup ? " work-kind--mockup" : ""}`}>
+                        {work.mockup ? "ตัวอย่างระบบ (Mockup)" : "เปิดใช้งานจริง"}
+                      </span>
+                      <span className="work-desc">
+                        <Phrases text={shortDescriptions[work.slug] ?? work.description} />
+                      </span>
+                      <span className="work-more">
+                        ดูรายละเอียด
+                        <ArrowRight size={16} aria-hidden="true" />
+                      </span>
+                    </span>
+                  </Link>
+                </li>
               );
             })}
-          </div>
+          </ul>
         </div>
       </section>
 
-      <section className="process-band" id="process">
-        <div className="section-shell">
-          <div className="section-heading section-heading--compact">
-            <p className="eyebrow">Delivery Model</p>
-            <h2>
-              <Phrases text={"กระบวนการส่งมอบแบบ software\u00a0house"} />
-            </h2>
-            <p>
-              <Phrases text="ทำงานเป็นรอบสั้น ๆ มี scope ชัด ตรวจงานได้เป็นระยะ และพร้อมส่งขึ้นใช้งานจริง" />
-            </p>
-          </div>
-          <div className="process-steps">
-            {process.map((item, index) => (
-              <div className="process-step" key={item.step}>
-                <span className="process-number">{item.step}</span>
-                <strong>{item.title}</strong>
-                <p><Phrases text={item.text} /></p>
-                {index < process.length - 1 && <span className="process-connector" aria-hidden="true" />}
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="contact-section section-shell" id="contact">
-        <div className="contact-copy">
-          <p className="eyebrow">Start a Project</p>
-          <h2>ประเมิน scope เบื้องต้น</h2>
+      <section className="section shell" id="process">
+        <div className="section-head">
+          <h2>ขั้นตอนการทำงาน</h2>
           <p>
-            <Phrases text="เลือกประเภทงานที่ต้องการ ระบบจะคำนวณงบเริ่มต้นคร่าว ๆ เพื่อใช้คุย requirement ต่อได้เร็วขึ้น ราคาจริงขึ้นกับขอบเขตงาน รายละเอียดการใช้งาน และระยะเวลาส่งมอบ" />
+            <Phrases text="ทำงานเป็นรอบสั้น ๆ มี scope ชัด ตรวจงานได้เป็นระยะ และพร้อมส่งขึ้นใช้งานจริง" />
           </p>
-          <div className="contact-list">
-            <a className="contact-item" href={`mailto:${COMPANY_EMAIL}`}>
-              <Mail size={18} />
-              {COMPANY_EMAIL}
-            </a>
-            <span className="contact-item">
-              <MapPin size={18} />
-              Bangkok, Thailand
-            </span>
-            <span className="contact-item">
-              <FileCheck2 size={18} />
-              Scope → Prototype → Build → Deploy
-            </span>
-          </div>
         </div>
-        <ScopeEstimator />
+        <ol className="steps">
+          {process.map((item, index) => (
+            <li className="step" key={item.title}>
+              <span className="step-num" aria-hidden="true">
+                {index + 1}
+              </span>
+              <h3>{item.title}</h3>
+              <p>
+                <Phrases text={item.text} />
+              </p>
+            </li>
+          ))}
+        </ol>
       </section>
+
+      <QuoteSection />
 
       <SiteFooter />
     </main>

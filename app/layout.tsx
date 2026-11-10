@@ -1,34 +1,57 @@
-import type { Metadata } from "next";
-import { Noto_Sans_Thai, Sora } from "next/font/google";
+import type { Metadata, Viewport } from "next";
+import { Anuphan } from "next/font/google";
 import "./globals.css";
+import { SmoothAnchors } from "./components/SmoothAnchors";
+import { COMPANY_NAME, SITE_DESCRIPTION, SITE_TITLE, SITE_URL } from "./site";
 
-const sora = Sora({
-  subsets: ["latin"],
-  variable: "--font-display",
-  display: "swap"
-});
-
-const notoSansThai = Noto_Sans_Thai({
+// One Thai/Latin family for display and body
+const anuphan = Anuphan({
   subsets: ["thai", "latin"],
-  variable: "--font-body",
+  variable: "--font-sans",
   display: "swap"
 });
 
+// Site-wide defaults; pages set their own title, description and canonical
 export const metadata: Metadata = {
-  metadataBase: new URL("https://volcanap-softwork.com"),
-  title: "VOLCANAP SOFTWORK | Software House",
-  description:
-    "VOLCANAP SOFTWORK รับออกแบบและพัฒนาเว็บไซต์ เว็บแอป ระบบองค์กร Dashboard และ AI workflow แบบครบวงจร",
+  metadataBase: new URL(SITE_URL),
+  title: {
+    default: SITE_TITLE,
+    template: `%s | ${COMPANY_NAME}`
+  },
+  description: SITE_DESCRIPTION,
+  applicationName: COMPANY_NAME,
+  keywords: [
+    "software house",
+    "รับพัฒนาระบบ",
+    "รับทำเว็บแอป",
+    "custom software",
+    "ระบบ CRM",
+    "ระบบ HR",
+    "ระบบคลินิก",
+    "dashboard",
+    "AI automation"
+  ],
   icons: {
-    icon: "/volcanap-logo.png",
-    apple: "/volcanap-logo.png"
+    icon: "/volcanap-vcn.png",
+    apple: "/volcanap-vcn.png"
   },
   openGraph: {
-    title: "VOLCANAP SOFTWORK | Software House",
-    description:
-      "Software House สำหรับเว็บและระบบองค์กร Full Function ตั้งแต่ UX/UI, Next.js, Backend, Security, Dashboard จนถึง Deployment",
-    images: ["/volcanap-logo.png"]
-  }
+    type: "website",
+    locale: "th_TH",
+    siteName: COMPANY_NAME,
+    title: SITE_TITLE,
+    description: SITE_DESCRIPTION
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: SITE_TITLE,
+    description: SITE_DESCRIPTION
+  },
+  formatDetection: { telephone: false, email: false, address: false }
+};
+
+export const viewport: Viewport = {
+  themeColor: "#ffffff"
 };
 
 export default function RootLayout({
@@ -37,8 +60,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="th" className={`${sora.variable} ${notoSansThai.variable}`}>
-      <body>{children}</body>
+    <html lang="th" className={anuphan.variable}>
+      <body>
+        {children}
+        <SmoothAnchors />
+      </body>
     </html>
   );
 }

@@ -12,3 +12,6 @@ output/playwright
 .playwright-cli
 .playwright-mcp
 codex-skills/
+
+# Impeccable design-tool working files (screenshots, logs, decision pages)
+.impeccable/

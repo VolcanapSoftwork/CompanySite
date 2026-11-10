@@ -2,17 +2,23 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, ArrowRight, CheckCircle2, ExternalLink } from "lucide-react";
+import { ArrowLeft, ArrowRight, ExternalLink } from "lucide-react";
 import { Phrases, plainText } from "../../components/Phrases";
 import { SiteFooter } from "../../components/SiteFooter";
 import { SiteHeader } from "../../components/SiteHeader";
 import { WorkGallery } from "../../components/WorkGallery";
-import { COMPANY_NAME, navItems } from "../../site";
+import { SITE_URL, navItems } from "../../site";
+import { JsonLd } from "../../components/JsonLd";
 import { getWork, works } from "../../works";
 
 type Props = {
   params: Promise<{ slug: string }>;
 };
+
+// A landscape screenshot shares best; fall back to the hero shot
+function shareImage(work: NonNullable<ReturnType<typeof getWork>>) {
+  return work.gallery?.find((image) => image.device === "desktop") ?? work.screenshot ?? null;
+}
 
 export function generateStaticParams() {
   return works.map((work) => ({ slug: work.slug }));
@@ -21,9 +27,21 @@ export function generateStaticParams() {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const work = getWork((await params).slug);
   if (!work) return {};
+  const title = work.name.join(" ");
+  const description = plainText(work.detail.overview);
+  const image = shareImage(work);
   return {
-    title: `${work.name.join(" ")} | ${COMPANY_NAME}`,
-    description: plainText(work.detail.overview)
+    title,
+    description,
+    alternates: { canonical: `/work/${work.slug}` },
+    openGraph: {
+      type: "article",
+      url: `/work/${work.slug}`,
+      title,
+      description,
+      ...(image && { images: [{ url: image.src, width: image.width, height: image.height, alt: image.alt }] })
+    },
+    twitter: { card: "summary_large_image", title, description, ...(image && { images: [image.src] }) }
   };
 }
 
@@ -33,11 +51,36 @@ export default async function WorkDetailPage({ params }: Props) {
 
   const { detail } = work;
   const Icon = work.icon;
+  const image = shareImage(work);
+  const pageUrl = `${SITE_URL}/work/${work.slug}`;
+  const workLd = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "CreativeWork",
+        "@id": `${pageUrl}#work`,
+        name: work.name.join(" "),
+        description: plainText(work.detail.overview),
+        url: pageUrl,
+        inLanguage: "th",
+        keywords: work.tags.join(", "),
+        ...(image && { image: `${SITE_URL}${image.src}` }),
+        creator: { "@id": `${SITE_URL}/#organization` }
+      },
+      {
+        "@type": "BreadcrumbList",
+        itemListElement: [
+          { "@type": "ListItem", position: 1, name: "หน้าแรก", item: SITE_URL },
+          { "@type": "ListItem", position: 2, name: "ผลงาน", item: `${SITE_URL}/#work` },
+          { "@type": "ListItem", position: 3, name: work.name.join(" "), item: pageUrl }
+        ]
+      }
+    ]
+  };
 
   return (
     <main>
-      <div className="page-glow" aria-hidden="true" />
-
+      <JsonLd data={workLd} />
       <SiteHeader navItems={navItems} />
 
       <section className="case-section work-hero">
@@ -48,7 +91,6 @@ export default async function WorkDetailPage({ params }: Props) {
           </Link>
           <div className={`work-hero-main${work.screenshot ? " work-hero-main--shot" : ""}`}>
             <div className="work-hero-copy">
-              <p className="eyebrow">{work.label}</p>
               <h1>
                 {work.name.map((line, index) => (
                   <span key={line}>
@@ -57,6 +99,7 @@ export default async function WorkDetailPage({ params }: Props) {
                   </span>
                 ))}
               </h1>
+              <p className="work-hero-kind">{work.mockup ? work.label : `เปิดใช้งานจริง · ${work.label}`}</p>
               <p className="case-copy">
                 <Phrases text={detail.overview} />
               </p>
@@ -67,12 +110,12 @@ export default async function WorkDetailPage({ params }: Props) {
               </div>
               {work.url &&
                 (work.mockup ? (
-                  <Link className="primary-button work-live" href={work.url}>
+                  <Link className="button button--primary work-live" href={work.url}>
                     เปิดดู Mockup
                     <ArrowRight size={16} aria-hidden="true" />
                   </Link>
                 ) : (
-                  <a className="primary-button work-live" href={work.url} target="_blank" rel="noopener noreferrer">
+                  <a className="button button--primary work-live" href={work.url} target="_blank" rel="noopener noreferrer">
                     เยี่ยมชมระบบจริง
                     <ExternalLink size={16} aria-hidden="true" />
                   </a>
@@ -119,7 +162,6 @@ export default async function WorkDetailPage({ params }: Props) {
       {work.gallery && work.gallery.length > 0 && (
         <section className="section-shell work-block" id="screens">
           <div className="section-heading section-heading--compact">
-            <p className="eyebrow">Screens</p>
             <h2>{work.mockup ? "ภาพตัวอย่างหน้าจอ" : "ภาพตัวอย่างระบบจริง"}</h2>
             {work.galleryNote && (
               <p>
@@ -133,7 +175,6 @@ export default async function WorkDetailPage({ params }: Props) {
 
       <section className="section-shell work-block">
         <div className="section-heading section-heading--compact">
-          <p className="eyebrow">Challenge</p>
           <h2>โจทย์และปัญหาเดิม</h2>
         </div>
         <ul className="work-challenges">
@@ -147,15 +188,11 @@ export default async function WorkDetailPage({ params }: Props) {
 
       <section className="section-shell work-block">
         <div className="section-heading section-heading--compact">
-          <p className="eyebrow">Solution</p>
           <h2>สิ่งที่เราพัฒนา</h2>
         </div>
         <div className="service-grid">
           {detail.solutions.map((item) => (
             <article className="service-card" key={item.title}>
-              <div className="icon-tile">
-                <CheckCircle2 size={22} />
-              </div>
               <h3>{item.title}</h3>
               <p>
                 <Phrases text={item.text} />
@@ -167,7 +204,6 @@ export default async function WorkDetailPage({ params }: Props) {
 
       <section className="section-shell work-block">
         <div className="section-heading section-heading--compact">
-          <p className="eyebrow">Tech Stack</p>
           <h2>เทคโนโลยีที่ใช้</h2>
         </div>
         <div className="work-stack">
@@ -186,8 +222,8 @@ export default async function WorkDetailPage({ params }: Props) {
 
       <section className="section-shell work-cta">
         <h2>มีระบบที่อยากทำแบบนี้?</h2>
-        <a className="primary-button" href="/#contact">
-          เริ่มโปรเจกต์
+        <a className="button button--primary" href="/#contact">
+          ขอใบเสนอราคา
           <ArrowRight size={16} aria-hidden="true" />
         </a>
       </section>

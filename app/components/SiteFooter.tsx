@@ -6,10 +6,10 @@ export function SiteFooter() {
   return (
     <footer className="site-footer">
       <div className="footer-brand">
-        <Image src="/volcanap-logo.png" alt="" width={40} height={40} sizes="40px" />
+        <Image src="/volcanap-vcn-160.png" alt="" width={40} height={40} unoptimized />
         <div>
           <strong>VOLCANAP SOFTWORK</strong>
-          <span>Software House · Bangkok</span>
+          <span>Software House</span>
         </div>
       </div>
       <nav className="footer-nav" aria-label="Footer navigation">

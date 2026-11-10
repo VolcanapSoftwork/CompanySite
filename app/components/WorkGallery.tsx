@@ -97,13 +97,12 @@ export function WorkGallery({ images }: { images: WorkImage[] }) {
   return (
     <>
       {filters.length > 2 && (
-        <div className="gallery-filters" role="tablist" aria-label="กรองภาพตามอุปกรณ์">
+        <div className="gallery-filters" role="group" aria-label="กรองภาพตามอุปกรณ์">
           {filters.map((f) => (
             <button
               key={f.value}
               type="button"
-              role="tab"
-              aria-selected={filter === f.value}
+              aria-pressed={filter === f.value}
               className={filter === f.value ? "is-active" : undefined}
               onClick={() => setFilter(f.value)}
             >
