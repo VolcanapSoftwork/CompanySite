@@ -1,17 +1,30 @@
 import type { MetadataRoute } from "next";
-import { SITE_URL } from "./site";
+import { SITE_URL, localePath, type Lang } from "./site";
 import { works } from "./works";
 
-// Mockup demo apps (/mockups) are noindex and left out on purpose
+const LANGS: Lang[] = ["th", "en"];
+
+// Every page in both languages, each pointing at its translation.
+// Mockup demo apps (/mockups) are noindex and left out on purpose.
 export default function sitemap(): MetadataRoute.Sitemap {
   const now = new Date();
-  return [
-    { url: SITE_URL, lastModified: now, changeFrequency: "monthly", priority: 1 },
+  const pages = [
+    { path: "/", changeFrequency: "monthly" as const, priority: 1 },
     ...works.map((work) => ({
-      url: `${SITE_URL}/work/${work.slug}`,
-      lastModified: now,
+      path: `/work/${work.slug}`,
       changeFrequency: "yearly" as const,
       priority: work.mockup ? 0.5 : 0.8
     }))
   ];
+  const url = (lang: Lang, path: string) => `${SITE_URL}${localePath(lang, path)}`;
+
+  return pages.flatMap((page) =>
+    LANGS.map((lang) => ({
+      url: url(lang, page.path),
+      lastModified: now,
+      changeFrequency: page.changeFrequency,
+      priority: page.priority,
+      alternates: { languages: { th: url("th", page.path), en: url("en", page.path) } }
+    }))
+  );
 }

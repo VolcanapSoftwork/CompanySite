@@ -7,6 +7,8 @@ import { Fragment } from "react";
  * Use a non-breaking space ( ) to keep English pairs like "data flow" together.
  */
 export function Phrases({ text }: { text: string }) {
+  // Text without Thai already breaks at spaces, so it needs no help
+  if (!/[฀-๿]/.test(text)) return <>{plainText(text)}</>;
   const chunks = text.replace(/ ๆ/g, " ๆ").split(" ");
   return (
     <>

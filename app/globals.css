@@ -356,6 +356,49 @@ li {
   font-size: 0.97rem;
 }
 
+.header-actions {
+  display: flex;
+  align-items: center;
+  justify-self: end;
+  gap: 12px;
+}
+
+/* TH / EN: two small segments, the current language filled */
+.lang-switch {
+  display: inline-flex;
+  padding: 3px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--white);
+}
+
+.lang-switch a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 38px;
+  min-height: 34px;
+  padding: 0 8px;
+  border-radius: 7px;
+  color: var(--muted);
+  font-size: 0.82rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  transition: background-color 0.18s, color 0.18s;
+}
+
+.lang-switch a[aria-current] {
+  background: var(--brand-soft);
+  color: var(--brand-text);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .lang-switch a:not([aria-current]):hover {
+    background: var(--bg-tint);
+    color: var(--ink);
+  }
+}
+
 .menu-button {
   display: none;
   width: 44px;
@@ -1574,6 +1617,46 @@ li {
   text-align: right;
 }
 
+/* Registered company names and email, under the brand row */
+.footer-legal {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px 24px;
+  padding-top: 20px;
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 0.86rem;
+}
+
+.footer-company {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px 16px;
+}
+
+.footer-company span + span::before {
+  content: "·";
+  margin-right: 16px;
+  color: var(--faint);
+}
+
+.footer-email {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--ink-2);
+  font-weight: 500;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .footer-email:hover {
+    color: var(--brand-text);
+  }
+}
+
 /* ── Responsive ── */
 @media (max-width: 1100px) {
   .services {
@@ -1645,6 +1728,20 @@ li {
     max-width: none;
     text-align: center;
   }
+
+  .footer-legal {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .footer-company {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .footer-company span + span::before {
+    content: none;
+  }
 }
 
 @media (max-width: 680px) {
@@ -1658,6 +1755,20 @@ li {
 
   .brand small {
     display: none;
+  }
+
+  .site-header {
+    gap: 12px;
+  }
+
+  .header-actions {
+    gap: 8px;
+  }
+
+  .lang-switch a {
+    min-width: 34px;
+    min-height: 32px;
+    padding: 0 6px;
   }
 
   .hero h1 {

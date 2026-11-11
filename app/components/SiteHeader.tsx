@@ -3,15 +3,42 @@
 import Image from "next/image";
 import { ArrowRight, Menu, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { getNavItems, localePath, type Lang } from "../site";
 
-type NavItem = {
-  href: string;
-  label: string;
+const COPY = {
+  th: { cta: "ขอใบเสนอราคา", home: "VOLCANAP SOFTWORK หน้าแรก", menu: "เปิด/ปิดเมนู", langs: "เลือกภาษา" },
+  en: { cta: "Request a quote", home: "VOLCANAP SOFTWORK home", menu: "Toggle navigation menu", langs: "Choose language" }
 };
 
-export function SiteHeader({ navItems }: { navItems: NavItem[] }) {
+/**
+ * TH / EN switch. `path` is the current page without the /en prefix, so each
+ * link goes to the same page in the other language.
+ */
+function LangSwitch({ lang, path, label }: { lang: Lang; path: string; label: string }) {
+  return (
+    <nav className="lang-switch" aria-label={label}>
+      {(["th", "en"] as const).map((code) => (
+        <a
+          key={code}
+          href={localePath(code, path)}
+          hrefLang={code}
+          lang={code}
+          aria-current={code === lang ? "true" : undefined}
+          aria-label={code === "th" ? "ภาษาไทย" : "English"}
+        >
+          {code.toUpperCase()}
+        </a>
+      ))}
+    </nav>
+  );
+}
+
+export function SiteHeader({ lang, path = "/" }: { lang: Lang; path?: string }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const shellRef = useRef<HTMLDivElement>(null);
+  const navItems = getNavItems(lang);
+  const t = COPY[lang];
+  const home = localePath(lang, "/");
 
   useEffect(() => {
     if (!menuOpen) return;
@@ -43,7 +70,7 @@ export function SiteHeader({ navItems }: { navItems: NavItem[] }) {
   return (
     <div className="header-shell" ref={shellRef}>
       <header className="site-header">
-        <a className="brand" href="/#top" aria-label="VOLCANAP SOFTWORK home">
+        <a className="brand" href={`${home}#top`} aria-label={t.home}>
           <Image
             src="/volcanap-vcn-160.png"
             unoptimized
@@ -65,20 +92,23 @@ export function SiteHeader({ navItems }: { navItems: NavItem[] }) {
             </a>
           ))}
         </nav>
-        <a className="button button--primary header-cta" href="/#contact">
-          ขอใบเสนอราคา
-          <ArrowRight size={16} aria-hidden="true" />
-        </a>
-        <button
-          className="menu-button"
-          type="button"
-          aria-label="Toggle navigation menu"
-          aria-expanded={menuOpen}
-          aria-controls="mobile-nav"
-          onClick={() => setMenuOpen((open) => !open)}
-        >
-          {menuOpen ? <X size={22} aria-hidden="true" /> : <Menu size={22} aria-hidden="true" />}
-        </button>
+        <div className="header-actions">
+          <LangSwitch lang={lang} path={path} label={t.langs} />
+          <a className="button button--primary header-cta" href={`${home}#contact`}>
+            {t.cta}
+            <ArrowRight size={16} aria-hidden="true" />
+          </a>
+          <button
+            className="menu-button"
+            type="button"
+            aria-label={t.menu}
+            aria-expanded={menuOpen}
+            aria-controls="mobile-nav"
+            onClick={() => setMenuOpen((open) => !open)}
+          >
+            {menuOpen ? <X size={22} aria-hidden="true" /> : <Menu size={22} aria-hidden="true" />}
+          </button>
+        </div>
       </header>
 
       {menuOpen && (
@@ -88,8 +118,8 @@ export function SiteHeader({ navItems }: { navItems: NavItem[] }) {
               {item.label}
             </a>
           ))}
-          <a className="button button--primary mobile-nav-cta" href="/#contact" onClick={() => setMenuOpen(false)}>
-            ขอใบเสนอราคา
+          <a className="button button--primary mobile-nav-cta" href={`${home}#contact`} onClick={() => setMenuOpen(false)}>
+            {t.cta}
             <ArrowRight size={16} aria-hidden="true" />
           </a>
         </nav>

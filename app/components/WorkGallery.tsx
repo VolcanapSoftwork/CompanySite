@@ -5,14 +5,20 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { Box, ChevronLeft, ChevronRight, Monitor, Smartphone, X } from "lucide-react";
 import type { WorkImage } from "../works";
 import { Phrases, plainText } from "./Phrases";
+import type { Lang } from "../site";
 
 type Filter = "all" | WorkImage["device"];
 
+const COPY = {
+  th: { all: "ทั้งหมด", media: "3D & สื่อ", filter: "กรองภาพตามอุปกรณ์", zoom: "ดูภาพขยาย", dialog: "ภาพตัวอย่างระบบ", close: "ปิด", prev: "ภาพก่อนหน้า", next: "ภาพถัดไป" },
+  en: { all: "All", media: "3D & media", filter: "Filter images by device", zoom: "View larger", dialog: "System screenshots", close: "Close", prev: "Previous image", next: "Next image" }
+};
+
 const FILTERS: { value: Filter; label: string }[] = [
-  { value: "all", label: "ทั้งหมด" },
+  { value: "all", label: "all" },
   { value: "desktop", label: "Desktop" },
   { value: "mobile", label: "Mobile" },
-  { value: "media", label: "3D & สื่อ" }
+  { value: "media", label: "media" }
 ];
 
 // Rendered widths of each tile in .gallery-grid (shell 1180px, 1320px from 1600px wide).
@@ -55,7 +61,8 @@ function DeviceFrame({ image, sizes }: { image: WorkImage; sizes: string }) {
   );
 }
 
-export function WorkGallery({ images }: { images: WorkImage[] }) {
+export function WorkGallery({ images, lang }: { images: WorkImage[]; lang: Lang }) {
+  const t = COPY[lang];
   const [filter, setFilter] = useState<Filter>("all");
   const [open, setOpen] = useState<number | null>(null);
   const dialogRef = useRef<HTMLDialogElement>(null);
@@ -97,7 +104,7 @@ export function WorkGallery({ images }: { images: WorkImage[] }) {
   return (
     <>
       {filters.length > 2 && (
-        <div className="gallery-filters" role="group" aria-label="กรองภาพตามอุปกรณ์">
+        <div className="gallery-filters" role="group" aria-label={t.filter}>
           {filters.map((f) => (
             <button
               key={f.value}
@@ -109,7 +116,7 @@ export function WorkGallery({ images }: { images: WorkImage[] }) {
               {f.value === "desktop" && <Monitor size={15} aria-hidden="true" />}
               {f.value === "mobile" && <Smartphone size={15} aria-hidden="true" />}
               {f.value === "media" && <Box size={15} aria-hidden="true" />}
-              {f.label}
+              {f.value === "all" ? t.all : f.value === "media" ? t.media : f.label}
             </button>
           ))}
         </div>
@@ -121,7 +128,7 @@ export function WorkGallery({ images }: { images: WorkImage[] }) {
             key={image.src}
             className={`gallery-item gallery-item--${image.device}${image.src === wideSrc ? " gallery-item--wide" : ""}`}
           >
-            <button type="button" className="gallery-open" onClick={() => setOpen(index)} aria-label={`ดูภาพขยาย: ${plainText(image.caption)}`}>
+            <button type="button" className="gallery-open" onClick={() => setOpen(index)} aria-label={`${t.zoom}: ${plainText(image.caption)}`}>
               <DeviceFrame
                 image={image}
                 sizes={THUMB_SIZES[image.src === wideSrc ? "wide" : image.device]}
@@ -137,7 +144,7 @@ export function WorkGallery({ images }: { images: WorkImage[] }) {
       <dialog
         ref={dialogRef}
         className="gallery-lightbox"
-        aria-label="ภาพตัวอย่างระบบ"
+        aria-label={t.dialog}
         onClose={() => {
           setOpen(null);
           document.documentElement.style.overflow = "";
@@ -174,15 +181,15 @@ export function WorkGallery({ images }: { images: WorkImage[] }) {
             </figcaption>
           </figure>
         )}
-        <button type="button" className="gallery-nav gallery-nav--close" onClick={() => setOpen(null)} aria-label="ปิด">
+        <button type="button" className="gallery-nav gallery-nav--close" onClick={() => setOpen(null)} aria-label={t.close}>
           <X size={22} />
         </button>
         {visible.length > 1 && (
           <>
-            <button type="button" className="gallery-nav gallery-nav--prev" onClick={() => step(-1)} aria-label="ภาพก่อนหน้า">
+            <button type="button" className="gallery-nav gallery-nav--prev" onClick={() => step(-1)} aria-label={t.prev}>
               <ChevronLeft size={26} />
             </button>
-            <button type="button" className="gallery-nav gallery-nav--next" onClick={() => step(1)} aria-label="ภาพถัดไป">
+            <button type="button" className="gallery-nav gallery-nav--next" onClick={() => step(1)} aria-label={t.next}>
               <ChevronRight size={26} />
             </button>
           </>

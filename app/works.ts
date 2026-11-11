@@ -1,4 +1,6 @@
 import { Box, HeartPulse, Stethoscope, Target, Users, type LucideIcon } from "lucide-react";
+import type { Lang } from "./site";
+import { worksEn } from "./works.en";
 
 export type WorkDetail = {
   overview: string;
@@ -398,6 +400,24 @@ export const works: Work[] = [
   }
 ];
 
-export function getWork(slug: string) {
-  return works.find((work) => work.slug === slug);
+/** Works with their text in the given language (Thai is the source; English comes from works.en.ts) */
+export function getWorks(lang: Lang): Work[] {
+  if (lang === "th") return works;
+  return works.map((work) => {
+    const en = worksEn[work.slug];
+    if (!en) return work;
+    return {
+      ...work,
+      description: en.description,
+      tags: en.tags ?? work.tags,
+      screenshot: work.screenshot && { ...work.screenshot, alt: en.screenshotAlt ?? work.screenshot.alt },
+      gallery: work.gallery?.map((image, i) => ({ ...image, ...en.gallery?.[i] })),
+      galleryNote: en.galleryNote ?? work.galleryNote,
+      detail: en.detail
+    };
+  });
+}
+
+export function getWork(slug: string, lang: Lang = "th") {
+  return getWorks(lang).find((work) => work.slug === slug);
 }

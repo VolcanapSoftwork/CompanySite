@@ -49,6 +49,15 @@ public/
   tatip-rtp.png
 ```
 
+## Languages (TH / EN)
+
+- Thai is served at `/` and `/work/[slug]`; English at `/en` and `/en/work/[slug]`.
+- Each language has its own root layout (`app/(th)/layout.tsx`, `app/(en)/layout.tsx`) so `<html lang>` is correct; both render `components/RootDocument.tsx`.
+- Page UI lives in shared components (`components/HomePage.tsx`, `components/WorkDetail.tsx`) with a `COPY` table per language.
+- Portfolio text: Thai in `app/works.ts`, English in `app/works.en.ts` (gallery entries match by position).
+- Company names, email, nav and site titles are in `app/site.ts`.
+- The concept mockup apps (`/mockups/*`) are Thai only.
+
 ## Notes
 
 - Package manager is pinned with `packageManager: pnpm@10.33.0`.

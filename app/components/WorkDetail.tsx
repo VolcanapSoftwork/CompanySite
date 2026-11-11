@@ -3,40 +3,73 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, ArrowRight, ExternalLink } from "lucide-react";
-import { Phrases, plainText } from "../../components/Phrases";
-import { SiteFooter } from "../../components/SiteFooter";
-import { SiteHeader } from "../../components/SiteHeader";
-import { WorkGallery } from "../../components/WorkGallery";
-import { SITE_URL, navItems } from "../../site";
-import { JsonLd } from "../../components/JsonLd";
-import { getWork, works } from "../../works";
+import { Phrases, plainText } from "./Phrases";
+import { SiteFooter } from "./SiteFooter";
+import { SiteHeader } from "./SiteHeader";
+import { WorkGallery } from "./WorkGallery";
+import { SITE_URL, languageAlternates, localePath, type Lang } from "../site";
+import { JsonLd } from "./JsonLd";
+import { getWork, works, type Work } from "../works";
 
-type Props = {
-  params: Promise<{ slug: string }>;
+const COPY = {
+  th: {
+    back: "ตัวอย่างงานทั้งหมด",
+    live: "เปิดใช้งานจริง",
+    openMockup: "เปิดดู Mockup",
+    visitLive: "เยี่ยมชมระบบจริง",
+    screensMockup: "ภาพตัวอย่างหน้าจอ",
+    screensLive: "ภาพตัวอย่างระบบจริง",
+    challenges: "โจทย์และปัญหาเดิม",
+    solutions: "สิ่งที่เราพัฒนา",
+    stack: "เทคโนโลยีที่ใช้",
+    ctaTitle: "มีระบบที่อยากทำแบบนี้?",
+    cta: "ขอใบเสนอราคา",
+    crumbHome: "หน้าแรก",
+    crumbWork: "ผลงาน"
+  },
+  en: {
+    back: "All work",
+    live: "Live system",
+    openMockup: "Open Mockup",
+    visitLive: "Visit the live system",
+    screensMockup: "Sample screens",
+    screensLive: "Screens from the live system",
+    challenges: "The challenge",
+    solutions: "What we built",
+    stack: "Technology",
+    ctaTitle: "Planning a system like this?",
+    cta: "Request a quote",
+    crumbHome: "Home",
+    crumbWork: "Work"
+  }
 };
 
+export type WorkParams = { params: Promise<{ slug: string }> };
+
 // A landscape screenshot shares best; fall back to the hero shot
-function shareImage(work: NonNullable<ReturnType<typeof getWork>>) {
+function shareImage(work: Work) {
   return work.gallery?.find((image) => image.device === "desktop") ?? work.screenshot ?? null;
 }
 
-export function generateStaticParams() {
+export function workStaticParams() {
   return works.map((work) => ({ slug: work.slug }));
 }
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const work = getWork((await params).slug);
+export async function workMetadata(lang: Lang, { params }: WorkParams): Promise<Metadata> {
+  const work = getWork((await params).slug, lang);
   if (!work) return {};
   const title = work.name.join(" ");
   const description = plainText(work.detail.overview);
   const image = shareImage(work);
+  const path = `/work/${work.slug}`;
+  const url = localePath(lang, path);
   return {
     title,
     description,
-    alternates: { canonical: `/work/${work.slug}` },
+    alternates: { canonical: url, languages: languageAlternates(path) },
     openGraph: {
       type: "article",
-      url: `/work/${work.slug}`,
+      url,
       title,
       description,
       ...(image && { images: [{ url: image.src, width: image.width, height: image.height, alt: image.alt }] })
@@ -45,14 +78,18 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-export default async function WorkDetailPage({ params }: Props) {
-  const work = getWork((await params).slug);
+export async function WorkDetailPage({ lang, params }: WorkParams & { lang: Lang }) {
+  const work = getWork((await params).slug, lang);
   if (!work) notFound();
 
+  const t = COPY[lang];
   const { detail } = work;
   const Icon = work.icon;
   const image = shareImage(work);
-  const pageUrl = `${SITE_URL}/work/${work.slug}`;
+  const path = `/work/${work.slug}`;
+  const home = localePath(lang, "/");
+  const homeUrl = `${SITE_URL}${lang === "en" ? "/en" : ""}`;
+  const pageUrl = `${SITE_URL}${localePath(lang, path)}`;
   const workLd = {
     "@context": "https://schema.org",
     "@graph": [
@@ -62,7 +99,7 @@ export default async function WorkDetailPage({ params }: Props) {
         name: work.name.join(" "),
         description: plainText(work.detail.overview),
         url: pageUrl,
-        inLanguage: "th",
+        inLanguage: lang,
         keywords: work.tags.join(", "),
         ...(image && { image: `${SITE_URL}${image.src}` }),
         creator: { "@id": `${SITE_URL}/#organization` }
@@ -70,8 +107,8 @@ export default async function WorkDetailPage({ params }: Props) {
       {
         "@type": "BreadcrumbList",
         itemListElement: [
-          { "@type": "ListItem", position: 1, name: "หน้าแรก", item: SITE_URL },
-          { "@type": "ListItem", position: 2, name: "ผลงาน", item: `${SITE_URL}/#work` },
+          { "@type": "ListItem", position: 1, name: t.crumbHome, item: homeUrl },
+          { "@type": "ListItem", position: 2, name: t.crumbWork, item: `${homeUrl}/#work` },
           { "@type": "ListItem", position: 3, name: work.name.join(" "), item: pageUrl }
         ]
       }
@@ -81,13 +118,13 @@ export default async function WorkDetailPage({ params }: Props) {
   return (
     <main>
       <JsonLd data={workLd} />
-      <SiteHeader navItems={navItems} />
+      <SiteHeader lang={lang} path={path} />
 
       <section className="case-section work-hero">
         <div className="section-shell work-hero-layout">
-          <Link className="work-back" href="/#work">
+          <Link className="work-back" href={`${home}#work`}>
             <ArrowLeft size={16} aria-hidden="true" />
-            ตัวอย่างงานทั้งหมด
+            {t.back}
           </Link>
           <div className={`work-hero-main${work.screenshot ? " work-hero-main--shot" : ""}`}>
             <div className="work-hero-copy">
@@ -99,7 +136,7 @@ export default async function WorkDetailPage({ params }: Props) {
                   </span>
                 ))}
               </h1>
-              <p className="work-hero-kind">{work.mockup ? work.label : `เปิดใช้งานจริง · ${work.label}`}</p>
+              <p className="work-hero-kind">{work.mockup ? work.label : `${t.live} · ${work.label}`}</p>
               <p className="case-copy">
                 <Phrases text={detail.overview} />
               </p>
@@ -111,12 +148,12 @@ export default async function WorkDetailPage({ params }: Props) {
               {work.url &&
                 (work.mockup ? (
                   <Link className="button button--primary work-live" href={work.url}>
-                    เปิดดู Mockup
+                    {t.openMockup}
                     <ArrowRight size={16} aria-hidden="true" />
                   </Link>
                 ) : (
                   <a className="button button--primary work-live" href={work.url} target="_blank" rel="noopener noreferrer">
-                    เยี่ยมชมระบบจริง
+                    {t.visitLive}
                     <ExternalLink size={16} aria-hidden="true" />
                   </a>
                 ))}
@@ -162,20 +199,20 @@ export default async function WorkDetailPage({ params }: Props) {
       {work.gallery && work.gallery.length > 0 && (
         <section className="section-shell work-block" id="screens">
           <div className="section-heading section-heading--compact">
-            <h2>{work.mockup ? "ภาพตัวอย่างหน้าจอ" : "ภาพตัวอย่างระบบจริง"}</h2>
+            <h2>{work.mockup ? t.screensMockup : t.screensLive}</h2>
             {work.galleryNote && (
               <p>
                 <Phrases text={work.galleryNote} />
               </p>
             )}
           </div>
-          <WorkGallery images={work.gallery} />
+          <WorkGallery images={work.gallery} lang={lang} />
         </section>
       )}
 
       <section className="section-shell work-block">
         <div className="section-heading section-heading--compact">
-          <h2>โจทย์และปัญหาเดิม</h2>
+          <h2>{t.challenges}</h2>
         </div>
         <ul className="work-challenges">
           {detail.challenges.map((item) => (
@@ -188,7 +225,7 @@ export default async function WorkDetailPage({ params }: Props) {
 
       <section className="section-shell work-block">
         <div className="section-heading section-heading--compact">
-          <h2>สิ่งที่เราพัฒนา</h2>
+          <h2>{t.solutions}</h2>
         </div>
         <div className="service-grid">
           {detail.solutions.map((item) => (
@@ -204,7 +241,7 @@ export default async function WorkDetailPage({ params }: Props) {
 
       <section className="section-shell work-block">
         <div className="section-heading section-heading--compact">
-          <h2>เทคโนโลยีที่ใช้</h2>
+          <h2>{t.stack}</h2>
         </div>
         <div className="work-stack">
           {detail.techStack.map((group) => (
@@ -221,14 +258,14 @@ export default async function WorkDetailPage({ params }: Props) {
       </section>
 
       <section className="section-shell work-cta">
-        <h2>มีระบบที่อยากทำแบบนี้?</h2>
-        <a className="button button--primary" href="/#contact">
-          ขอใบเสนอราคา
+        <h2>{t.ctaTitle}</h2>
+        <a className="button button--primary" href={`${home}#contact`}>
+          {t.cta}
           <ArrowRight size={16} aria-hidden="true" />
         </a>
       </section>
 
-      <SiteFooter />
+      <SiteFooter lang={lang} />
     </main>
   );
 }
